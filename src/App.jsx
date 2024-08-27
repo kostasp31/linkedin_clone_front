@@ -62,6 +62,18 @@ const SignUp = ({ userName, handleNameChange, password, handlePasswordChange, lo
   }
 }
 
+const Notification = ({message}) => {
+  if (message === null)
+    return null
+  else {
+    return (
+      <div className='error'>
+        {message}
+      </div>
+    )
+  }
+}
+
 const App = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -69,6 +81,7 @@ const App = () => {
   const [newPwassword, setNewPassword] = useState('')
   const [showLogin, setShowLogin] = useState(false)
   const [showSignup, setShowSignup] = useState(false)
+  const [errorMessage, setErrorMessage] = useState(null)
   
   const [user, setUser] = useState(null)
 
@@ -112,7 +125,10 @@ const App = () => {
       setUser(user)
       window.localStorage.setItem('loggedInUser', JSON.stringify(user)) 
     } catch (exception) {
-      console.log('Wrong credentials')
+      setErrorMessage(exception.response.data.error)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
     }
     setEmail('')
     setPassword('')
@@ -130,6 +146,7 @@ const App = () => {
     return (
       <>
         <h1>Linkedout</h1>
+        <Notification message={errorMessage} />
         <div>
           <ul>
             <li>
