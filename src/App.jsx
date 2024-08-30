@@ -8,41 +8,67 @@ import {
   Navigate
 } from 'react-router-dom'
 
+
 const Login = ({ loginUser, msg }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   return (
-    <div className='page'>
-      <a href='/' ><img src='../name.png' className='logo' /></a>
-      <Notification message={msg} />
-      <div className='forms' >
-        <h2 className='blk'>Sign In</h2>
-        <form onSubmit={() => {
-          loginUser(event, email, password)
-          setEmail('')
-          setPassword('')
-        }}>
-          <div>
-            Email: <input
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            Password: <input
-              value={password}
-              type='password'
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <button type="submit">login</button>
-          </div>
-        </form>
+    <div>
+      <div className='logoDiv' >
+        <a href='/' ><img src='../name.png' className='imageLogo'/></a>
       </div>
+    
+      <div className='formGrandpa'>
+      <div className='formParent'>
+
+        <div className='forms' >
+          <h2 className='blk'>Sign In</h2>
+          <form onSubmit={() => {
+            loginUser(event, email, password)
+            setEmail('')
+            setPassword('')
+          }}>
+            <div >
+              <input
+                id='mail'
+                type='text'
+                className='loginInput'
+                placeholder='example@mail.com'
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                />
+            </div>
+            <div>
+              <input
+                id='pass'
+                type='password'
+                className='loginInput'
+                placeholder='your_password'
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </div>
+            <div>
+              Forgot password? Click <a href=''>here</a>
+            </div>
+            <br />
+            <div>
+              <button className='loginButton' type="submit">Sign in</button>
+            </div>
+            <br />
+            <Notification message={msg} />
+            <div>
+              Don't have an account? <a href='/register'>Join Now</a>
+            </div>
+            <br />
+          </form>
+        </div>
+
+      </div>  {/*Form parent */}
+      </div>  {/*Form grandpa */}
     </div>
   )
 }
@@ -64,8 +90,33 @@ const SignUp = ({ setErrorMessage, msg }) => {
       setTimeout(() => {
         setErrorMessage(null)
       }, 3000)      
+      return
     }
-
+    let regex = /^[A-Za-z]{3,32}$/; // Example regex pattern
+    if (!regex.test(firstName) || !regex.test(lastName)) {
+      setErrorMessage('Names must contain 3-32 valid letters')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+      return
+    }
+    regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
+    if (!regex.test(email)) {
+      setErrorMessage('Invalid email')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+      return
+    }
+    regex = /^[0-9]+$/;
+    if (!regex.test(phone)) {
+      setErrorMessage('Invalid phone number')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 3000)
+      return
+    }
+      
     try {
       const resp = await registerS.register(
         {
@@ -96,44 +147,51 @@ const SignUp = ({ setErrorMessage, msg }) => {
 
   return (
     <div>
-      <a href='/' ><img src='../name.png' className='logo' /></a>
-      <Notification message={msg} />
-      <div className='forms'>
+      <div className='logoDiv' >
+        <a href='/' ><img src='../name.png' className='imageLogo'/></a>
+      </div>
+      <div className='formGrandpa'>
+      <div className='formParent'>
+
+      <div className='forms' style={{width: '400px'}}>
         <h2>Sign Up</h2>
+        <p>Tell us some things about yourself</p>
         <form onSubmit={onRegister}>
           <div>
-            First name: <input
+            <input
+            placeholder='First name'
               value={firstName}
               onChange={(event) => setFirstName(event.target.value)}
-              pattern="[A-Za-z]{3,32}"
               required
             />
           </div>
           <div>
-            Last name: <input
+            <input
+            placeholder='Last name'
               value={lastName}
               onChange={(event) => setLastName(event.target.value)}
-              pattern="[A-Za-z]{3,32}"
               required
             />
           </div>
           <div>
-            Email: <input
+            <input
               value={email}
+              placeholder='Email'
               onChange={(event) => setEmail(event.target.value)}
-              pattern="[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+"
               required
             />
           </div>
-          <div>
-            Phone number: <input
+          <div> 
+            <input
+              placeholder='Phone number'
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
               required
             />
           </div>
           <div>
-            Password: <input
+            <input
+              placeholder='Password'
               value={password}
               type='password'
               onChange={(event) => setPassword(event.target.value)}
@@ -141,18 +199,27 @@ const SignUp = ({ setErrorMessage, msg }) => {
             />
           </div>
           <div>
-            Confirm password: <input
+            <input
+              placeholder='Confirm password'
               value={passwordConfirm}
               type='password'
               onChange={(event) => setPasswordConfirm(event.target.value)}
               required
             />
           </div>
+          <br />  
           <div>
-            <button type="submit">Join LinkedOut</button>
+            <button className='loginButton' type="submit">Join PluggedIn</button>
           </div>
+          <br />
+          <Notification message={msg} />
+          <p>Already have an account? <a href='/login'>Login</a></p>
         </form>
       </div>
+
+      </div>  {/*Form parent */}
+      </div>  {/*Form grandpa */}
+
     </div>
   )
 }
@@ -180,7 +247,7 @@ const About = () => {
 const Welcome = () => {
   return (
     <>
-      <div>
+      <div style={{backgroundColor  : 'rgba(0,0,0,0.5);'}} >
         <Link className='button' to="/login" style={{ float: 'right' }} >Login</Link>
         <Link className='button' to="/register" style={{ float: 'right' }}>Join Now</Link>
         <Link className='button' to="/about">about</Link>
@@ -200,7 +267,7 @@ const Home = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'black'}} >
+      <div style={{backgroundColor  : 'rgba(0,0,0,0.5);'}} >
         <Link className='button' to="/" style={{backgroundColor: '#48c1df'}} >Home</Link>
         <Link className='button' to="/home/network">Network</Link>
         <Link className='button' to="/home/ads">Ads</Link>
@@ -208,7 +275,7 @@ const Home = ({ user, setUser }) => {
         <Link className='button' to="/home/notifications">Notifications</Link>
         <Link className='button' to="/home/personal_info">Personal Info</Link>
         <Link className='button' to="/home/settings">Settings</Link>
-        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
+        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a'}} onClick={logout} >Logout</button>
       </div>
       {/* <img src='../name.png' /> */}
       <div>
@@ -389,8 +456,7 @@ const Settings = ({ user, setUser }) => {
 const Footer = () => {
   return (
     <div className='footer'>
-      This is a summer project for tedi
-      {/* <p>Kostas Petrakis & Filippos Papadimitriou, copyright 2024. All rights reserved &copy;</p> */}
+      <p>Kostas Petrakis & Filippos Papadimitriou, copyright 2024. All rights reserved &copy;</p>
     </div>
   )
 }
@@ -453,7 +519,7 @@ const App = () => {
         <Route path="/home/personal_info" element={user ? <Personal user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
       </Routes>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   )
 }

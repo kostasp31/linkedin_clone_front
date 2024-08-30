@@ -1,16 +1,15 @@
 .error {
   color: red;
   background: lightgrey;
-  font-size: 20px;
+  font-size: 15px;
   border-style: solid;
   border-radius: 5px;
   padding: 10px;
-  margin-bottom: 10px;
 }
 
 .button {
   font-family:'Segoe UI';
-  background-color: #04AA6D; /* Green */
+  background-color: #04AA6D;
   border: none;
   color: white;
   padding: 16px 32px;
@@ -21,71 +20,101 @@
   margin-right: 1px;
   transition-duration: 0.4s;
   cursor: pointer;
+  width: 5%;
 }
 
 .button:hover {
-  background-color: #48c1df; /* Green */
+  background-color: #48c1df;
   transition-duration: 500ms;
 }
 
-.button1 {
-  background-color: white; 
-  color: black; 
-  border: 2px solid #04AA6D;
+.imageLogo {
+  /* display: block; */
+  height: 15%;
+  width: 15%;
+  border-radius: 10px;
+  margin-top: 1%;
+  margin-left: 1%;
 }
 
-.button1:hover {
-  background-color: #04AA6D;
-  color: white;
-}
-
-.button2 {
-  background-color: white; 
-  color: black; 
-  border: 2px solid #008CBA;
-}
-
-.button2:hover {
-  background-color: #008CBA;
-  color: white;
-}
-
-.button3 {
-  background-color: white; 
-  color: black; 
-  border: 2px solid #d82525;
-}
-
-.button3:hover {
-  background-color: #d82525;
-  color: white;
-}
-
-.logo {
-  display: block;
-  height: 10%;
-  width: 10%;
-  /* size: 10px; */
-}
-
-.forms {
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;*/
-  border: 1px solid black;
-  text-align: center;
-  margin: auto;
-  /* height: 50%;
-  width: auto; */
+.logoDiv {
+  display: relative; /* or block */
+  z-index: 10; /* optional, but recommended */
+  position: absolute;
 }
 
 body {
   margin: 0;
   padding: 0;
+  /* background-image: url("../public/background_home.jpg"); */
+  background-attachment:fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-family:'Segoe UI';
 }
 
 .footer {
   position: absolute;
+  bottom: 0;
+  z-index: 5;
+  margin-left: 1%;
+}
+
+input {
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.loginButton {
+  background-color: #04AA6D;
+  border: 0;
+  box-sizing: border-box;
+  color: #ffffff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-family:'Segoe UI';
+  height: 40px;
+  line-height: 40px;
+  padding: 0 24px;
+  position: relative;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 28px;
+}
+
+
+.formGrandpa {
+  display: table;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
   width: 100%;
+
+  z-index: 1;
+}
+
+.formParent {
+  display: table-cell;
+  vertical-align: middle;
+
+  z-index: 1;
+}
+
+.forms {
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+
+  text-align: center;
+
+  padding: 5px 5px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+  border-radius: 5px;
 }
