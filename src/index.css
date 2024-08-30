@@ -18,9 +18,14 @@
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
-  margin: 4px 2px;
+  margin-right: 1px;
   transition-duration: 0.4s;
   cursor: pointer;
+}
+
+.button:hover {
+  background-color: #48c1df; /* Green */
+  transition-duration: 500ms;
 }
 
 .button1 {
@@ -73,6 +78,11 @@
   margin: auto;
   /* height: 50%;
   width: auto; */
+}
+
+body {
+  margin: 0;
+  padding: 0;
 }
 
 .footer {
