@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import loginS from './services/login'
 
-const Login = ({ userName, handleNameChange, password, handlePasswordChange, loginUser, showLogin }) => {
+const Login = ({ userName, handleNameChange, password, handlePasswordChange, loginUser, showLogin, setShowLogin }) => {
   if (showLogin) {
     return (
       <div>
@@ -22,6 +22,7 @@ const Login = ({ userName, handleNameChange, password, handlePasswordChange, log
           </div>
           <div>
             <button type="submit">login</button>
+            <button className='button3' onClick={() => setShowLogin(!showLogin)} title="Close Form">&times;</button>
           </div>
         </form>
       </div>
@@ -35,7 +36,7 @@ const Login = ({ userName, handleNameChange, password, handlePasswordChange, log
 const SignUp = ({ userName, handleNameChange, password, handlePasswordChange, loginUser, showSignup }) => {
   if (showSignup) {
     return (
-      <div>
+      <div style={{flow: 'right'}}>
         <h2>Sign Up</h2>
         <form onSubmit={loginUser}>
           <div>
@@ -145,17 +146,17 @@ const App = () => {
   if (user === null) {
     return (
       <>
-        <h1>Linkedout</h1>
+        <img src='../name.png' />
         <Notification message={errorMessage} />
         <div>
-          <ul>
-            <li>
-              <button onClick={() => { setShowLogin(!showLogin) }}>Sign in</button>
-            </li>
-            <li>
-              <button onClick={() => { setShowSignup(!showSignup) }}>Join now</button>
-            </li>
-          </ul>
+          {/* <ul>
+            <li> */}
+              <button className='button1' onClick={() => { if (!showLogin) setShowLogin(!showLogin) }}>Sign in</button>
+            {/* </li>
+            <li> */}
+              <button className='button2' onClick={() => { setShowSignup(!showSignup) }}>Join now</button>
+            {/* </li>
+          </ul> */}
           <Login
             userName={email}
             password={password}
@@ -163,6 +164,7 @@ const App = () => {
             handlePasswordChange={handlePasswordChange}
             loginUser={loginUser}
             showLogin={showLogin}
+            setShowLogin={setShowLogin}
           />
           <SignUp
             userName={newUserName}
@@ -179,7 +181,8 @@ const App = () => {
 
   return (
       <>
-        <h1>Linkedout</h1>
+        {/* <h1>Linkedout</h1> */}
+        <img src='../name.png' style={{'float': 'center'}} />
         <div>
           {user.firstName} is logged in
           <button onClick={() => {window.localStorage.clear(); setUser(null)}}>Logout</button>
