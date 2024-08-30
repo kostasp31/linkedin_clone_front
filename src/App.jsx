@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import loginS from './services/login'
 import registerS from './services/register'
+import dataS from './services/data'
 import {
   BrowserRouter as Router,
   Routes, Route, Link,
   useParams, useNavigate,
   Navigate
 } from 'react-router-dom'
+import data from './services/data'
 
 
 const Login = ({ loginUser, msg }) => {
@@ -247,7 +249,7 @@ const About = () => {
 const Welcome = () => {
   return (
     <>
-      <div style={{backgroundColor  : 'rgba(0,0,0,0.5);'}} >
+      <div style={{backgroundColor  : 'rgba(0,0,0,0.5)'}} >
         <Link className='button' to="/login" style={{ float: 'right' }} >Login</Link>
         <Link className='button' to="/register" style={{ float: 'right' }}>Join Now</Link>
         <Link className='button' to="/about">about</Link>
@@ -267,7 +269,7 @@ const Home = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'rgba(0,0,0,0.5);'}} >
+      <div style={{backgroundColor  : 'rgba(0,0,0,0.5)'}} >
         <Link className='button' to="/" style={{backgroundColor: '#48c1df'}} >Home</Link>
         <Link className='button' to="/home/network">Network</Link>
         <Link className='button' to="/home/ads">Ads</Link>
@@ -398,6 +400,20 @@ const Notifications = ({ user, setUser }) => {
 }
 
 const Personal = ({ user, setUser }) => {
+  const [usrData, setUsrData] = useState(null)
+  const [cv, setCv] = useState('')
+  const [edit, setEdit] = useState(false)
+  const [editText, setEditText] = useState('Edit')
+
+  useEffect(() => {
+    const fun = async () => {
+      const data = await dataS.userData(user.data.toString())
+      setUsrData(data)
+      setCv(data.bio)
+    }
+    fun()
+  }, [])  // user.data ?
+
   const navigate = useNavigate()
   const logout = () => {
     setUser(null)
@@ -405,6 +421,18 @@ const Personal = ({ user, setUser }) => {
     navigate('/')
   }
 
+  const updateCV = async () => {
+    // console.log(user.data)
+    const resp = await dataS.updateData(user.data.toString(), { bio: `${cv}` }, user.token)
+    // console.log(resp)
+    setEdit(!edit)
+  }
+
+  let textBoxStyle = {}
+  let bioBoxStyle = {}
+  {edit ? textBoxStyle={ display: '' } : textBoxStyle={ display: 'none' } }
+  {!edit ? bioBoxStyle={ display: '' } : bioBoxStyle={ display: 'none' } }
+  
   return (
     <>
       <div style={{backgroundColor  : 'black'}} >
@@ -417,9 +445,35 @@ const Personal = ({ user, setUser }) => {
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
-      {/* <img src='../name.png' /> */}
       <div>
-        Your info
+        <div>
+          <h2>Your info:</h2>
+          <p>{user.firstName} {user.lastName}</p>
+          <p>{user.email}</p>
+          <p>{user.phone}</p>
+        </div>
+        <h2>Your CV:</h2>
+          <div style={bioBoxStyle} className='bioText' >
+            {usrData ? 
+              <div style={{whiteSpace: 'pre-line'}}>{cv}</div>
+              : ''
+            }
+          </div>
+          <div style={textBoxStyle}>
+            <textarea name="Text1" cols="40" rows="5" value={cv} onChange={(event) => setCv(event.target.value)}></textarea>
+            <br />
+          </div>
+          <button onClick={updateCV} style={textBoxStyle} className='savebtn' >Save changes</button>
+          <div style={{float: 'right'}}>
+            <div style={textBoxStyle}>
+              <input type="checkbox" />  This info is private
+            </div>
+          </div>
+          <button className='cancelbtn' onClick={() => {
+            setEdit(!edit)
+            editText === 'Edit' ? setEditText('Cancel') : setEditText('Edit')
+          }}>{editText}</button>
+          
       </div>
     </>
   )
