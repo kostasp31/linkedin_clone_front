@@ -423,6 +423,10 @@ const Personal = ({ user, setUser }) => {
   const [selectedGender, setSelectedGender] = useState('')
   const [gender, setGender] = useState('')
 
+  const [address, setAddress] = useState(null)
+  const [editAddress, setEditAddress] = useState(false)
+  const [newAddress, setNewAddress] = useState('')
+
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
@@ -441,6 +445,8 @@ const Personal = ({ user, setUser }) => {
         setGender('Male')
       else if (data.gender === 2)
         setGender('Female')
+
+      setAddress(data.address)
 
       const userInformation = await userS.userInfo(user.id.toString())
       setUserInf(userInformation)
@@ -490,6 +496,10 @@ const Personal = ({ user, setUser }) => {
     const resp = await dataS.updateData(user.data.toString(), { gender: (selectedGender === 'Male' ? 1 : 2) }, user.token)
     setEditGender(!editGender)
     setGender(selectedGender)
+  } 
+
+  const updateAddr = async () => {
+    const resp = await dataS.updateData(user.data.toString(), { address: newAddress }, user.token)
   }
 
   let textBoxStyle = {}
@@ -500,6 +510,7 @@ const Personal = ({ user, setUser }) => {
   let hobBoxStyle = {}
 
   let genderSelectorStyle = {}
+  let addressChangeStyle = {}
 
   {edit ? textBoxStyle={ display: '' } : textBoxStyle={ display: 'none' } }
   {!edit ? bioBoxStyle={ display: '' } : bioBoxStyle={ display: 'none' } }
@@ -511,7 +522,8 @@ const Personal = ({ user, setUser }) => {
   {!editHobbies ? hobBoxStyle={ display: '' } : hobBoxStyle={ display: 'none' } }
 
   {editGender ? genderSelectorStyle={ display: '' } : genderSelectorStyle={ display: 'none' } }
-  // {!editHobbies ? hobBoxStyle={ display: '' } : hobBoxStyle={ display: 'none' } }
+  {editAddress ? addressChangeStyle={ display: '' } : addressChangeStyle={ display: 'none' } }
+
   return (
     <>
       <div style={{backgroundColor  : 'black'}} >
@@ -530,9 +542,28 @@ const Personal = ({ user, setUser }) => {
           <h2>Your info:</h2>
           <p>Name: {user.firstName} {user.lastName}</p>
           <p>Email: {user.email}</p>
-          <p>Phone number: {userInf.phoneNumber ? <div>{userInf.phoneNumber}</div> : 'Not specified'}</p>
-          <p>Address: {data.address ? <div>{data.address}</div> : 'Not specified'}</p>
-          <p>Gender: {gender ? gender :  'Not specified' }<button onClick={() => setEditGender(!editGender)}>Change</button></p>
+          <p>Phone number: {userInf.phoneNumber ? <div>{userInf.phoneNumber}</div> : 'Not specified '}<button> Change</button></p>
+          <p>Address: {address ? <div>{address} </div> : 'Not specified '}<button onClick={() => setEditAddress(!editAddress)}> Change</button></p>
+
+          <div style={addressChangeStyle}>
+          <form style={{ marginRight: '85%', display: 'block' }} onSubmit={(event) => {
+            event.preventDefault()
+            setEditAddress(!editAddress)
+            setAddress(newAddress)
+            updateAddr()
+          }}>
+              <fieldset>
+              <legend>Type your address:</legend>
+              <div>
+                <input type='text' id='adressText' value={newAddress} onChange={(event) => setNewAddress(event.target.value)}/>
+                {/* <label for='adressText'>Female</label> */}
+              </div>
+              <button type='submit' style={{float: 'right'}}>Submit</button>
+            </fieldset>
+          </form>
+          </div>
+
+          <p>Gender: {gender ? `${gender} ` :  'Not specified ' }<button onClick={() => setEditGender(!editGender)}> Change</button></p>
           
           <div style={genderSelectorStyle}>
           <form onSubmit={(event) => {
@@ -542,11 +573,11 @@ const Personal = ({ user, setUser }) => {
             <fieldset>
               <legend>Select a gender:</legend>
               <div>
-                <input type='radio' id='femaleRadio' name='drone' value='Female' onChange={(event) => {setSelectedGender(event.target.value)}} />
+                <input type='radio' id='femaleRadio' name='gen' value='Female' onChange={(event) => {setSelectedGender(event.target.value)}} />
                 <label for='femaleRadio'>Female</label>
               </div>
               <div>
-                <input type='radio' id='maleRadio' name='drone' value='Male' onChange={(event) => {setSelectedGender(event.target.value)}} />
+                <input type='radio' id='maleRadio' name='gen' value='Male' onChange={(event) => {setSelectedGender(event.target.value)}} />
                 <label for='maleRadio'>Male</label>
               </div>
               <button type='submit' style={{float: 'right'}}>Submit</button>
@@ -558,27 +589,29 @@ const Personal = ({ user, setUser }) => {
         </div>
         : ''}
         <h2>Your CV:</h2>
-          <div style={bioBoxStyle} className='bioText' >
-            {usrData ? 
-              <div style={{whiteSpace: 'pre-line'}}>{cv}</div>
-              : ''
-            }
-          </div>
-          <div style={textBoxStyle}>
-            <textarea name="Text1" cols="40" rows="5" value={editedCv} onChange={(event) => setEditedCv(event.target.value)}></textarea>
-            <br />
-          </div>
-          <button onClick={updateCV} style={textBoxStyle} className='savebtn' >Save changes</button>
-          <div style={{float: 'right'}}>
-            <div style={textBoxStyle}>
-              <input type="checkbox" />  This info is private
+          <div>
+            <div style={bioBoxStyle} className='bioText' >
+              {usrData ? 
+                <div style={{whiteSpace: 'pre-line'}}>{cv}</div>
+                : ''
+              }
             </div>
+            <div style={textBoxStyle}>
+              <textarea name="Text1" cols="40" rows="5" value={editedCv} onChange={(event) => setEditedCv(event.target.value)}></textarea>
+              <br />
+            </div>
+            <button onClick={updateCV} style={textBoxStyle} className='savebtn' >Save changes</button>
+            <div style={{float: 'right'}}>
+              <div style={textBoxStyle}>
+                <input type="checkbox" />  This info is private
+              </div>
+            </div>
+            <button className='cancelbtn' onClick={() => {
+              setEdit(!edit)
+              editText === 'Edit' ? setEditText('Cancel') : setEditText('Edit')
+              setEditedCv(cv)
+            }}>{editText}</button>
           </div>
-          <button className='cancelbtn' onClick={() => {
-            setEdit(!edit)
-            editText === 'Edit' ? setEditText('Cancel') : setEditText('Edit')
-            setEditedCv(cv)
-          }}>{editText}</button>
 
         <h2>Your Experience:</h2>
           <div style={expBoxStyle} className='bioText' >
