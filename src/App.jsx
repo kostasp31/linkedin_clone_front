@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import loginS from './services/login'
 import registerS from './services/register'
 import dataS from './services/data'
+import userS from './services/user'
 import {
   BrowserRouter as Router,
   Routes, Route, Link,
@@ -402,14 +403,21 @@ const Notifications = ({ user, setUser }) => {
 const Personal = ({ user, setUser }) => {
   const [usrData, setUsrData] = useState(null)
   const [cv, setCv] = useState('')
+  const [editedCv, setEditedCv] = useState('')
   const [edit, setEdit] = useState(false)
   const [editText, setEditText] = useState('Edit')
+  const [userInf, setUserInf] = useState(null)
 
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
       setUsrData(data)
       setCv(data.bio)
+      setEditedCv(data.bio)
+
+      const userInformation = await userS.userInfo(user.id.toString())
+      setUserInf(userInformation)
+      console.log(data)
     }
     fun()
   }, [])  // user.data ?
@@ -423,9 +431,11 @@ const Personal = ({ user, setUser }) => {
 
   const updateCV = async () => {
     // console.log(user.data)
-    const resp = await dataS.updateData(user.data.toString(), { bio: `${cv}` }, user.token)
+    const resp = await dataS.updateData(user.data.toString(), { bio: `${editedCv}` }, user.token)
     // console.log(resp)
     setEdit(!edit)
+    setEditText('Edit')
+    setCv(editedCv)
   }
 
   let textBoxStyle = {}
@@ -446,12 +456,15 @@ const Personal = ({ user, setUser }) => {
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
       <div>
+        {(user && userInf) ?
         <div>
           <h2>Your info:</h2>
-          <p>{user.firstName} {user.lastName}</p>
+          <p>Name: {user.firstName} {user.lastName}</p>
           <p>{user.email}</p>
-          <p>{user.phone}</p>
+          <p>{userInf.phoneNumber}</p>
+          <p>My experience: {data.experience}</p>
         </div>
+        : ''}
         <h2>Your CV:</h2>
           <div style={bioBoxStyle} className='bioText' >
             {usrData ? 
@@ -460,7 +473,7 @@ const Personal = ({ user, setUser }) => {
             }
           </div>
           <div style={textBoxStyle}>
-            <textarea name="Text1" cols="40" rows="5" value={cv} onChange={(event) => setCv(event.target.value)}></textarea>
+            <textarea name="Text1" cols="40" rows="5" value={editedCv} onChange={(event) => setEditedCv(event.target.value)}></textarea>
             <br />
           </div>
           <button onClick={updateCV} style={textBoxStyle} className='savebtn' >Save changes</button>
@@ -472,6 +485,7 @@ const Personal = ({ user, setUser }) => {
           <button className='cancelbtn' onClick={() => {
             setEdit(!edit)
             editText === 'Edit' ? setEditText('Cancel') : setEditText('Edit')
+            setEditedCv(cv)
           }}>{editText}</button>
           
       </div>
