@@ -402,18 +402,45 @@ const Notifications = ({ user, setUser }) => {
 
 const Personal = ({ user, setUser }) => {
   const [usrData, setUsrData] = useState(null)
+  const [userInf, setUserInf] = useState(null)
+  
   const [cv, setCv] = useState('')
   const [editedCv, setEditedCv] = useState('')
   const [edit, setEdit] = useState(false)
   const [editText, setEditText] = useState('Edit')
-  const [userInf, setUserInf] = useState(null)
+
+  const [hobbies, setHobbies] = useState('')
+  const [editedHobbies, setEditedHobbies] = useState('')
+  const [editHobbies, setEditHobbies] = useState(false)
+  const [editTextHobbies, setEditTextHobbies] = useState('Edit')
+
+  const [exp, setExp] = useState('')
+  const [editedExp, setEditedExp] = useState('')
+  const [editExp, setEditExp] = useState(false)
+  const [editTextExp, setEditTextExp] = useState('Edit')
+
+  const [editGender, setEditGender] = useState(false)
+  const [selectedGender, setSelectedGender] = useState('')
+  const [gender, setGender] = useState('')
 
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
       setUsrData(data)
+
       setCv(data.bio)
       setEditedCv(data.bio)
+
+      setExp(data.experience)
+      setEditedExp(data.experience)
+
+      setHobbies(data.hobbies)
+      setEditedHobbies(data.hobbies)
+
+      if (data.gender === 1)
+        setGender('Male')
+      else if (data.gender === 2)
+        setGender('Female')
 
       const userInformation = await userS.userInfo(user.id.toString())
       setUserInf(userInformation)
@@ -438,11 +465,53 @@ const Personal = ({ user, setUser }) => {
     setCv(editedCv)
   }
 
+  const updateHobbies = async () => {
+    // console.log(user.data)
+    const resp = await dataS.updateData(user.data.toString(), { hobbies: `${editedHobbies}` }, user.token)
+    // console.log(resp)
+    setEditHobbies(!editHobbies)
+    setEditTextHobbies('Edit')
+    setHobbies(editedHobbies)
+  }
+
+  const updateExperience = async () => {
+    // console.log(user.data)
+    const resp = await dataS.updateData(user.data.toString(), { experience: `${editedExp}` }, user.token)
+    // console.log(resp)
+    setEditExp(!editExp)
+    setEditTextExp('Edit')
+    setExp(editedExp)
+  }
+  
+  const updateGender = async () => {
+    if (!selectedGender)
+      return
+    console.log(selectedGender)
+    const resp = await dataS.updateData(user.data.toString(), { gender: (selectedGender === 'Male' ? 1 : 2) }, user.token)
+    setEditGender(!editGender)
+    setGender(selectedGender)
+  }
+
   let textBoxStyle = {}
   let bioBoxStyle = {}
+  let textBoxStyleExp = {}
+  let expBoxStyle = {}
+  let textBoxStyleHob = {}
+  let hobBoxStyle = {}
+
+  let genderSelectorStyle = {}
+
   {edit ? textBoxStyle={ display: '' } : textBoxStyle={ display: 'none' } }
   {!edit ? bioBoxStyle={ display: '' } : bioBoxStyle={ display: 'none' } }
+
+  {editExp ? textBoxStyleExp={ display: '' } : textBoxStyleExp={ display: 'none' } }
+  {!editExp ? expBoxStyle={ display: '' } : expBoxStyle={ display: 'none' } }
   
+  {editHobbies ? textBoxStyleHob={ display: '' } : textBoxStyleHob={ display: 'none' } }
+  {!editHobbies ? hobBoxStyle={ display: '' } : hobBoxStyle={ display: 'none' } }
+
+  {editGender ? genderSelectorStyle={ display: '' } : genderSelectorStyle={ display: 'none' } }
+  // {!editHobbies ? hobBoxStyle={ display: '' } : hobBoxStyle={ display: 'none' } }
   return (
     <>
       <div style={{backgroundColor  : 'black'}} >
@@ -460,9 +529,32 @@ const Personal = ({ user, setUser }) => {
         <div>
           <h2>Your info:</h2>
           <p>Name: {user.firstName} {user.lastName}</p>
-          <p>{user.email}</p>
-          <p>{userInf.phoneNumber}</p>
-          <p>My experience: {data.experience}</p>
+          <p>Email: {user.email}</p>
+          <p>Phone number: {userInf.phoneNumber ? <div>{userInf.phoneNumber}</div> : 'Not specified'}</p>
+          <p>Address: {data.address ? <div>{data.address}</div> : 'Not specified'}</p>
+          <p>Gender: {gender ? gender :  'Not specified' }<button onClick={() => setEditGender(!editGender)}>Change</button></p>
+          
+          <div style={genderSelectorStyle}>
+          <form onSubmit={(event) => {
+            event.preventDefault()
+            updateGender()
+          }} style={{ marginRight: '85%' }}>
+            <fieldset>
+              <legend>Select a gender:</legend>
+              <div>
+                <input type='radio' id='femaleRadio' name='drone' value='Female' onChange={(event) => {setSelectedGender(event.target.value)}} />
+                <label for='femaleRadio'>Female</label>
+              </div>
+              <div>
+                <input type='radio' id='maleRadio' name='drone' value='Male' onChange={(event) => {setSelectedGender(event.target.value)}} />
+                <label for='maleRadio'>Male</label>
+              </div>
+              <button type='submit' style={{float: 'right'}}>Submit</button>
+            </fieldset>
+          </form>
+          </div>
+
+
         </div>
         : ''}
         <h2>Your CV:</h2>
@@ -487,6 +579,52 @@ const Personal = ({ user, setUser }) => {
             editText === 'Edit' ? setEditText('Cancel') : setEditText('Edit')
             setEditedCv(cv)
           }}>{editText}</button>
+
+        <h2>Your Experience:</h2>
+          <div style={expBoxStyle} className='bioText' >
+            {usrData ? 
+              <div style={{whiteSpace: 'pre-line'}}>{exp}</div>
+              : ''
+            }
+          </div>
+          <div style={textBoxStyleExp}>
+            <textarea name="Text2" cols="40" rows="5" value={editedExp} onChange={(event) => setEditedExp(event.target.value)}></textarea>
+            <br />
+          </div>
+          <button onClick={updateExperience} style={textBoxStyleExp} className='savebtn' >Save changes</button>
+          <div style={{float: 'right'}}>
+            <div style={textBoxStyleExp}>
+              <input type="checkbox" />  This info is private
+            </div>
+          </div>
+          <button className='cancelbtn' onClick={() => {
+            setEditExp(!editExp)
+            editTextExp === 'Edit' ? setEditTextExp('Cancel') : setEditTextExp('Edit')
+            setEditedExp(exp)
+          }}>{editTextExp}</button>
+
+        <h2>Your Hobbies:</h2>
+          <div style={hobBoxStyle} className='bioText' >
+            {usrData ? 
+              <div style={{whiteSpace: 'pre-line'}}>{hobbies}</div>
+              : ''
+            }
+          </div>
+          <div style={textBoxStyleHob}>
+            <textarea name="Text3" cols="40" rows="5" value={editedHobbies} onChange={(event) => setEditedHobbies(event.target.value)}></textarea>
+            <br />
+          </div>
+          <button onClick={updateHobbies} style={textBoxStyleHob} className='savebtn' >Save changes</button>
+          <div style={{float: 'right'}}>
+            <div style={textBoxStyleHob}>
+              <input type="checkbox" />  This info is private
+            </div>
+          </div>
+          <button className='cancelbtn' onClick={() => {
+            setEditHobbies(!editHobbies)
+            editTextHobbies === 'Edit' ? setEditTextHobbies('Cancel') : setEditTextHobbies('Edit')
+            setEditedHobbies(hobbies)
+          }}>{editTextHobbies}</button>
           
       </div>
     </>
@@ -587,7 +725,7 @@ const App = () => {
         <Route path="/home/personal_info" element={user ? <Personal user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }

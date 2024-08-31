@@ -128,7 +128,6 @@ textarea {
   box-sizing: border-box;
   border: 2px solid #ccc;
   border-radius: 4px;
-  background-color: #f8f8f8;
   font-size: 16px;
   resize: none;
 }
@@ -141,7 +140,7 @@ textarea {
   box-sizing: border-box;
   border: 2px solid #ccc;
   border-radius: 4px;
-  background-color: #c1cee7;
+  background-color: rgba(193, 206, 231, 0.7);
   font-size: 16px;
   resize: none;
 }
