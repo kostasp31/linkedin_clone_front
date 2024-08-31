@@ -145,6 +145,13 @@ textarea {
   resize: none;
 }
 
+.bioTextOuter {
+  margin-top: 1%;
+  width:100%;
+  display: flex;
+  justify-content: center; 
+}
+
 .cancelbtn {
   outline: none;
   cursor: pointer;
@@ -181,4 +188,55 @@ textarea {
 .savebtn:hover {
     transition: all .1s ease;
     box-shadow: 0 0 0 0 #fff, 0 0 0 3px #1de9b6;
+}
+
+.usrInfoInner {
+  border: 0.05em solid black;
+  width: 30%;
+
+  height: auto;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: rgba(193, 206, 231, 0.7);
+  font-size: 16px;
+  margin-top: 1%;
+  margin: 0 auto;
+  
+}
+
+.usrInfoOuter {
+  margin-top: 2%;
+  width:100%;
+  display: flex;
+  justify-content: center;
+}
+
+.buttonChange {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 14px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  border-radius: 6px;
+  border: none;
+
+  color: #fff;
+  background: linear-gradient(180deg, #4B91F7 0%, #367AF6 100%);
+  background-origin: border-box;
+  box-shadow: 0px 0.5px 1.5px rgba(54, 122, 246, 0.25), inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2);
+  touch-action: manipulation;
+}
+
+.buttonChange:focus {
+  box-shadow: inset 0px 0.8px 0px -0.25px rgba(255, 255, 255, 0.2), 0px 0.5px 1.5px rgba(54, 122, 246, 0.25), 0px 0px 0px 3.5px rgba(58, 108, 217, 0.5);
+  outline: 0;
+}
+
+.fpfPicture {
+  display: '';
+  float: right;
+  width: 30%;
+  margin-right: 10%;
 }

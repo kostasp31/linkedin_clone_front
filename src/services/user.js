@@ -12,4 +12,17 @@ const userInfo = async (id) => {
   }
 }
 
-export default { userInfo }
+const updateUserInfo = async (id, newData, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  try {
+    const resp = await axios.put(`${baseUrl}/${id}`, newData, config)
+    return resp.data
+  }
+  catch(exception) {
+    console.log(exception)
+  }
+}
+
+export default { userInfo, updateUserInfo }

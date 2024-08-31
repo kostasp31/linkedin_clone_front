@@ -276,7 +276,7 @@ const Home = ({ user, setUser }) => {
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal Info</Link>
+        <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a'}} onClick={logout} >Logout</button>
       </div>
@@ -304,7 +304,7 @@ const Network = ({ user, setUser }) => {
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal Info</Link>
+        <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
@@ -332,7 +332,7 @@ const Ads = ({ user, setUser }) => {
         <Link className='button' to="/home/ads" style={{backgroundColor: '#48c1df'}}>Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal Info</Link>
+        <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
@@ -360,7 +360,7 @@ const Messages = ({ user, setUser }) => {
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages" style={{backgroundColor: '#48c1df'}}>Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal Info</Link>
+        <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
@@ -388,7 +388,7 @@ const Notifications = ({ user, setUser }) => {
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications" style={{backgroundColor: '#48c1df'}}>Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal Info</Link>
+        <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
@@ -427,6 +427,12 @@ const Personal = ({ user, setUser }) => {
   const [editAddress, setEditAddress] = useState(false)
   const [newAddress, setNewAddress] = useState('')
 
+  const [number, setNumber] = useState(null)
+  const [editNumber, setEditNumber] = useState(false)
+  const [newNumber, setNewNumber] = useState('')
+  
+  const [image, setImage] = useState('')
+
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
@@ -447,10 +453,13 @@ const Personal = ({ user, setUser }) => {
         setGender('Female')
 
       setAddress(data.address)
-
+  
       const userInformation = await userS.userInfo(user.id.toString())
       setUserInf(userInformation)
-      console.log(data)
+      
+      setNumber(userInformation.phoneNumber)
+
+      setImage(userInformation.pfp)
     }
     fun()
   }, [])  // user.data ?
@@ -502,6 +511,12 @@ const Personal = ({ user, setUser }) => {
     const resp = await dataS.updateData(user.data.toString(), { address: newAddress }, user.token)
   }
 
+  const updateNumber = async () => {
+    const resp = await userS.updateUserInfo(user.id.toString(), { phoneNumber: newNumber }, user.token)
+  }
+
+
+
   let textBoxStyle = {}
   let bioBoxStyle = {}
   let textBoxStyleExp = {}
@@ -511,6 +526,7 @@ const Personal = ({ user, setUser }) => {
 
   let genderSelectorStyle = {}
   let addressChangeStyle = {}
+  let numChangeStyle = {}
 
   {edit ? textBoxStyle={ display: '' } : textBoxStyle={ display: 'none' } }
   {!edit ? bioBoxStyle={ display: '' } : bioBoxStyle={ display: 'none' } }
@@ -523,6 +539,7 @@ const Personal = ({ user, setUser }) => {
 
   {editGender ? genderSelectorStyle={ display: '' } : genderSelectorStyle={ display: 'none' } }
   {editAddress ? addressChangeStyle={ display: '' } : addressChangeStyle={ display: 'none' } }
+  {editNumber ? numChangeStyle={ display: '' } : numChangeStyle={ display: 'none' } }
 
   return (
     <>
@@ -532,44 +549,66 @@ const Personal = ({ user, setUser }) => {
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info" style={{backgroundColor: '#48c1df'}}>Personal Info</Link>
+        <Link className='button' to="/home/personal_info" style={{backgroundColor: '#48c1df'}}>Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
       <div>
         {(user && userInf) ?
-        <div>
-          <h2>Your info:</h2>
-          <p>Name: {user.firstName} {user.lastName}</p>
+        <div className='usrInfoOuter'>
+        <div className='usrInfoInner'>
+          <div style={{marginLeft:'8%'}}>
+          <h2 style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Your info:</h2>
+          <p>Name: {user.firstName} {user.lastName}</p><img className='fpfPicture' src={image} />
           <p>Email: {user.email}</p>
-          <p>Phone number: {userInf.phoneNumber ? <div>{userInf.phoneNumber}</div> : 'Not specified '}<button> Change</button></p>
-          <p>Address: {address ? <div>{address} </div> : 'Not specified '}<button onClick={() => setEditAddress(!editAddress)}> Change</button></p>
+          <p>Phone number: {userInf.phoneNumber ? <div>{number}</div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditNumber(!editNumber)}> Change</button></p>
+
+          <div style={numChangeStyle}>
+          <form style={{ marginRight: '85%', display: 'block' }} onSubmit={(event) => {
+            event.preventDefault()
+            if (!/^([0-9]{8,})$/.test(newNumber))
+              return 
+            setEditNumber(!editNumber)
+            setNumber(newNumber)
+            updateNumber()
+          }}>
+            <fieldset>
+              <legend>Type your number:</legend>
+              <div>
+                <input type='text' id='numText' value={newNumber} onChange={(event) => setNewNumber(event.target.value)}/>
+              </div>
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
+            </fieldset>
+          </form>
+          </div>
+
+          <p>Address: {address ? <div>{address} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditAddress(!editAddress)}> Change</button></p>
 
           <div style={addressChangeStyle}>
-          <form style={{ marginRight: '85%', display: 'block' }} onSubmit={(event) => {
+          <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
             event.preventDefault()
             setEditAddress(!editAddress)
             setAddress(newAddress)
             updateAddr()
           }}>
-              <fieldset>
+            <fieldset>
               <legend>Type your address:</legend>
               <div>
                 <input type='text' id='adressText' value={newAddress} onChange={(event) => setNewAddress(event.target.value)}/>
                 {/* <label for='adressText'>Female</label> */}
               </div>
-              <button type='submit' style={{float: 'right'}}>Submit</button>
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
           </div>
 
-          <p>Gender: {gender ? `${gender} ` :  'Not specified ' }<button onClick={() => setEditGender(!editGender)}> Change</button></p>
+          <p>Gender: {gender ? `${gender} ` :  'Not specified ' }<button className='buttonChange' onClick={() => setEditGender(!editGender)}> Change</button></p>
           
           <div style={genderSelectorStyle}>
           <form onSubmit={(event) => {
             event.preventDefault()
             updateGender()
-          }} style={{ marginRight: '85%' }}>
+          }} style={{ marginRight: '65%' }}>
             <fieldset>
               <legend>Select a gender:</legend>
               <div>
@@ -580,16 +619,18 @@ const Personal = ({ user, setUser }) => {
                 <input type='radio' id='maleRadio' name='gen' value='Male' onChange={(event) => {setSelectedGender(event.target.value)}} />
                 <label for='maleRadio'>Male</label>
               </div>
-              <button type='submit' style={{float: 'right'}}>Submit</button>
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
           </div>
-
+          <button className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Edit Profile Image</button>
 
         </div>
+        </div>
+        </div>  
         : ''}
         <h2>Your CV:</h2>
-          <div>
+          <div className=''>
             <div style={bioBoxStyle} className='bioText' >
               {usrData ? 
                 <div style={{whiteSpace: 'pre-line'}}>{cv}</div>
@@ -680,7 +721,7 @@ const Settings = ({ user, setUser }) => {
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal Info</Link>
+        <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings" style={{backgroundColor: '#48c1df'}}>Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
