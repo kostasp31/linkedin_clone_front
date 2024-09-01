@@ -171,9 +171,9 @@ const Personal = ({ user, setUser }) => {
         <div className='usrInfoInner'>
           <div style={{marginLeft:'8%'}}>
           <h2 style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Your info:</h2>
-          <p>Name: {user.firstName} {user.lastName}</p><img className='fpfPicture' src={image} />
-          <p>Email: {user.email}</p>
-          <p>Phone number: {userInf.phoneNumber ? <div>{number}</div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditNumber(!editNumber)}> Change</button></p>
+          <h3>Name: {user.firstName} {user.lastName}</h3><img className='fpfPicture' src={image} />
+          <h3>Email: {user.email}</h3>
+          <h3>Phone number: {userInf.phoneNumber ? <div>{number}</div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditNumber(!editNumber)}> Change</button></h3>
 
           <div style={numChangeStyle}>
           <form style={{ marginRight: '85%', display: 'block' }} onSubmit={(event) => {
@@ -194,7 +194,7 @@ const Personal = ({ user, setUser }) => {
           </form>
           </div>
 
-          <p>Address: {address ? <div>{address} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditAddress(!editAddress)}> Change</button></p>
+          <h3>Address: {address ? <div>{address} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditAddress(!editAddress)}> Change</button></h3>
 
           <div style={addressChangeStyle}>
           <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
@@ -213,7 +213,7 @@ const Personal = ({ user, setUser }) => {
           </form>
           </div>
 
-          <p>Gender: {gender ? `${gender} ` :  'Not specified ' }<button className='buttonChange' onClick={() => setEditGender(!editGender)}> Change</button></p>
+          <h3>Gender: {gender ? `${gender} ` :  'Not specified ' }<button className='buttonChange' onClick={() => setEditGender(!editGender)}> Change</button></h3>
           
           <div style={genderSelectorStyle}>
           <form onSubmit={(event) => {

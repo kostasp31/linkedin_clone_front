@@ -7,4 +7,13 @@ const login = async (credentials) => {
   return resp.data
 }
 
-export default { login }
+// send current password and new password
+const changePassword = async (credentials, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  const resp = await axios.post(`${baseUrl}/change_password`, credentials, config)
+  return resp.data
+}
+
+export default { login, changePassword }

@@ -11,234 +11,10 @@ import {
 } from 'react-router-dom'
 import data from './services/data'
 import Personal from './components/Personal'
-
-
-const Login = ({ loginUser, msg }) => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-
-  return (
-    <div>
-      <div className='logoDiv' >
-        <a href='/' ><img src='../name.png' className='imageLogo'/></a>
-      </div>
-    
-      <div className='formGrandpa'>
-      <div className='formParent'>
-
-        <div className='forms' >
-          <h2 className='blk'>Sign In</h2>
-          <form onSubmit={() => {
-            loginUser(event, email, password)
-            setEmail('')
-            setPassword('')
-          }}>
-            <div >
-              <input
-                id='mail'
-                type='text'
-                className='loginInput'
-                placeholder='example@mail.com'
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
-                />
-            </div>
-            <div>
-              <input
-                id='pass'
-                type='password'
-                className='loginInput'
-                placeholder='your_password'
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                required
-              />
-            </div>
-            <div>
-              Forgot password? Click <a href=''>here</a>
-            </div>
-            <br />
-            <div>
-              <button className='loginButton' type="submit">Sign in</button>
-            </div>
-            <br />
-            <Notification message={msg} />
-            <div>
-              Don't have an account? <a href='/register'>Join Now</a>
-            </div>
-            <br />
-          </form>
-        </div>
-
-      </div>  {/*Form parent */}
-      </div>  {/*Form grandpa */}
-    </div>
-  )
-}
-
-const SignUp = ({ setErrorMessage, msg }) => {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordConfirm, setPasswordConfirm] = useState('')
-
-  const navigate = useNavigate()
-
-  const onRegister = async (event) => {
-    event.preventDefault()
-    if (password !== passwordConfirm) {
-      setErrorMessage('Passwords do not match')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 3000)      
-      return
-    }
-    let regex = /^[A-Za-z]{3,32}$/; // Example regex pattern
-    if (!regex.test(firstName) || !regex.test(lastName)) {
-      setErrorMessage('Names must contain 3-32 valid letters')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 3000)
-      return
-    }
-    regex = /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/;
-    if (!regex.test(email)) {
-      setErrorMessage('Invalid email')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 3000)
-      return
-    }
-    regex = /^[0-9]+$/;
-    if (!regex.test(phone)) {
-      setErrorMessage('Invalid phone number')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 3000)
-      return
-    }
-      
-    try {
-      const resp = await registerS.register(
-        {
-          "firstName": firstName,
-          "lastName": lastName,
-          "email": email,
-          "phoneNumber": phone,
-          "password": password,
-          "pfp": ''
-        }
-      )
-      console.log(resp)
-      setFirstName('')
-      setLastName('')
-      setPhone('')
-      setEmail('')
-      setPassword('')
-      setPasswordConfirm('')
-      navigate('/login')
-
-    } catch (exception) {
-      setErrorMessage(exception.response.data.error)   // TODO: CHECK BACKEND ERROR
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 3000)
-    }
-  }
-
-  return (
-    <div>
-      <div className='logoDiv' >
-        <a href='/' ><img src='../name.png' className='imageLogo'/></a>
-      </div>
-      <div className='formGrandpa'>
-      <div className='formParent'>
-
-      <div className='forms' style={{width: '400px'}}>
-        <h2>Sign Up</h2>
-        <p>Tell us some things about yourself</p>
-        <form onSubmit={onRegister}>
-          <div>
-            <input
-            placeholder='First name'
-              value={firstName}
-              onChange={(event) => setFirstName(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <input
-            placeholder='Last name'
-              value={lastName}
-              onChange={(event) => setLastName(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <input
-              value={email}
-              placeholder='Email'
-              onChange={(event) => setEmail(event.target.value)}
-              required
-            />
-          </div>
-          <div> 
-            <input
-              placeholder='Phone number'
-              value={phone}
-              onChange={(event) => setPhone(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <input
-              placeholder='Password'
-              value={password}
-              type='password'
-              onChange={(event) => setPassword(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <input
-              placeholder='Confirm password'
-              value={passwordConfirm}
-              type='password'
-              onChange={(event) => setPasswordConfirm(event.target.value)}
-              required
-            />
-          </div>
-          <br />  
-          <div>
-            <button className='loginButton' type="submit">Join PluggedIn</button>
-          </div>
-          <br />
-          <Notification message={msg} />
-          <p>Already have an account? <a href='/login'>Login</a></p>
-        </form>
-      </div>
-
-      </div>  {/*Form parent */}
-      </div>  {/*Form grandpa */}
-
-    </div>
-  )
-}
-
-const Notification = ({ message }) => {
-  if (message === null)
-    return null
-  else {
-    return (
-      <div className='error'>
-        {message}
-      </div>
-    )
-  }
-}
+import Notification from './components/Notification'
+import Settings from './components/Settings'
+import Login from './components/Login'
+import SignUp from './components/SignUp'
 
 const About = () => {
   return (
@@ -251,7 +27,7 @@ const About = () => {
 const Welcome = () => {
   return (
     <>
-      <div style={{backgroundColor  : 'rgba(0,0,0,0.5)'}} >
+      <div style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} >
         <Link className='button' to="/login" style={{ float: 'right' }} >Login</Link>
         <Link className='button' to="/register" style={{ float: 'right' }}>Join Now</Link>
         <Link className='button' to="/about">about</Link>
@@ -271,15 +47,15 @@ const Home = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'rgba(0,0,0,0.5)'}} >
-        <Link className='button' to="/" style={{backgroundColor: '#48c1df'}} >Home</Link>
+      <div style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} >
+        <Link className='button' to="/" style={{ backgroundColor: '#48c1df' }} >Home</Link>
         <Link className='button' to="/home/network">Network</Link>
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
         <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
-        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a'}} onClick={logout} >Logout</button>
+        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
       {/* <img src='../name.png' /> */}
       <div>
@@ -299,9 +75,9 @@ const Network = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'black'}} >
+      <div style={{ backgroundColor: 'black' }} >
         <Link className='button' to="/" >Home</Link>
-        <Link className='button' to="/home/network" style={{backgroundColor: '#48c1df'}}>Network</Link>
+        <Link className='button' to="/home/network" style={{ backgroundColor: '#48c1df' }}>Network</Link>
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
@@ -327,17 +103,16 @@ const Ads = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'black'}} >
+      <div style={{ backgroundColor: 'black' }} >
         <Link className='button' to="/" >Home</Link>
         <Link className='button' to="/home/network">Network</Link>
-        <Link className='button' to="/home/ads" style={{backgroundColor: '#48c1df'}}>Ads</Link>
+        <Link className='button' to="/home/ads" style={{ backgroundColor: '#48c1df' }}>Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
         <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
-      {/* <img src='../name.png' /> */}
       <div>
         Your ads
       </div>
@@ -355,11 +130,11 @@ const Messages = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'black'}} >
+      <div style={{ backgroundColor: 'black' }} >
         <Link className='button' to="/" >Home</Link>
         <Link className='button' to="/home/network">Network</Link>
         <Link className='button' to="/home/ads">Ads</Link>
-        <Link className='button' to="/home/messages" style={{backgroundColor: '#48c1df'}}>Messages</Link>
+        <Link className='button' to="/home/messages" style={{ backgroundColor: '#48c1df' }}>Messages</Link>
         <Link className='button' to="/home/notifications">Notifications</Link>
         <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
@@ -383,12 +158,12 @@ const Notifications = ({ user, setUser }) => {
 
   return (
     <>
-      <div style={{backgroundColor  : 'black'}} >
+      <div style={{ backgroundColor: 'black' }} >
         <Link className='button' to="/" >Home</Link>
         <Link className='button' to="/home/network">Network</Link>
         <Link className='button' to="/home/ads">Ads</Link>
         <Link className='button' to="/home/messages">Messages</Link>
-        <Link className='button' to="/home/notifications" style={{backgroundColor: '#48c1df'}}>Notifications</Link>
+        <Link className='button' to="/home/notifications" style={{ backgroundColor: '#48c1df' }}>Notifications</Link>
         <Link className='button' to="/home/personal_info">Personal</Link>
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
@@ -398,115 +173,6 @@ const Notifications = ({ user, setUser }) => {
         Your notif
       </div>
     </>
-  )
-}
-
-const Settings = ({ user, setUser }) => {
-  const [editEmail, setEditEmail] = useState(false)
-  const [email, setEmail] = useState('')
-  const [newEmail, setNewEmail] = useState('')
-
-  const [editPass, setEditPass] = useState(false)
-  const [pass, setPass] = useState('')
-  const [newPass, setNewPass] = useState('')
-
-  useEffect(() => {
-    const fun = async () => {
-      // const userInformation = await userS.userInfo(user.id.toString())
-      // setUserInf(userInformation)
-      setEmail(user.email)
-      setNewEmail(user.email)
-    }
-    fun()
-  }, [])
-
-  const navigate = useNavigate()
-  const logout = () => {
-    setUser(null)
-    window.localStorage.clear()
-    navigate('/')
-  }
-
-  const changeEmail = async (event) => {
-    // TODO CHECK REGEX
-    event.preventDefault()
-    if (newEmail === email) {
-      setEditEmail(!editEmail)
-      return
-    }
-    setEmail(newEmail)
-    setEditEmail(!editEmail)
-    const resp = await userS.updateUserInfo(user.id.toString(), { email: newEmail }, user.token)
-  }
-
-  let showChangeEmail = {}
-  let showChangePass = {}
-  {editEmail ? showChangeEmail={ display: '' } : showChangeEmail={ display: 'none' } }
-  {editPass ? showChangePass={ display: '' } : showChangePass={ display: 'none' } }
-
-  return (
-    <div>
-      <div style={{backgroundColor  : 'black'}} >
-        <Link className='button' to="/" >Home</Link>
-        <Link className='button' to="/home/network">Network</Link>
-        <Link className='button' to="/home/ads">Ads</Link>
-        <Link className='button' to="/home/messages">Messages</Link>
-        <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal</Link>
-        <Link className='button' to="/home/settings" style={{backgroundColor: '#48c1df'}}>Settings</Link>
-        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
-      </div>
-
-      <div>
-        <div>
-        {(user) ?
-        <div>
-
-        <div className='usrInfoOuter'>
-        <div className='usrInfoInner'>
-          <div style={{marginLeft:'8%', marginRight:'8%'}}>
-          <h2 style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Change Email:</h2><hr />
-          <p>Email: {email} <button className='buttonChange' onClick={() => setEditEmail(!editEmail)} style={{float: 'right'}}>Change</button></p>
-
-          <div style={{textAlign:'center', marginBottom:'1%'}}>
-          <div style={showChangeEmail}>
-            <form onSubmit={(event) => changeEmail(event)}>
-              <p>Enter your new address:</p> 
-              <input type='text' value={newEmail} onChange={(event) => setNewEmail(event.target.value)} style={{margin: 'auto', border: '1px solid #367AF6'}}/><br />
-              <button type='submit' className='buttonChange' style={{background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Update Email</button>
-            </form>
-          </div>
-          </div>
-
-        </div>
-        </div>
-        </div>  
-
-        <div className='usrInfoOuter'>
-        <div className='usrInfoInner'>
-          <div style={{marginLeft:'8%', marginRight:'8%'}}>
-          <h2 style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Change Password:</h2><hr />
-          <p>Password: {pass} <button className='buttonChange' onClick={() => setEditPass(!editPass)} style={{float: 'right'}}>Change</button></p>
-
-          <div style={{textAlign:'center', marginBottom:'1%'}}>
-          <div style={showChangePass}>
-            <form onSubmit={(event) => {}}>
-              <p>Enter your new password:</p> 
-              <input type='text' value={newEmail} onChange={(event) => {}} style={{margin: 'auto', border: '1px solid #367AF6'}}/><br />
-              <button type='submit' className='buttonChange' style={{background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Set New Password</button>
-            </form>
-          </div>
-          </div>
-
-        </div>
-        </div>
-        </div>  
-
-        </div>
-        : ''}
-      </div>
-    </div>
-    </div>
   )
 }
 
@@ -520,6 +186,7 @@ const Footer = () => {
 
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
+  const [errorMessage1, setErrorMessage1] = useState(null)
   const [user, setUser] = useState(null)
 
   const navigate = useNavigate()
@@ -574,7 +241,7 @@ const App = () => {
         <Route path="/home/messages" element={user ? <Messages user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/notifications" element={user ? <Notifications user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/personal_info" element={user ? <Personal user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
-        <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
+        <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} msg={errorMessage} setMsg={setErrorMessage} msg1={errorMessage1} setMsg1={setErrorMessage1} /> : <Navigate replace to="/login" />} />
       </Routes>
       {/* <Footer /> */}
     </div>
