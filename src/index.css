@@ -130,6 +130,7 @@ textarea {
   border-radius: 4px;
   font-size: 16px;
   resize: none;
+  opacity: 0.7;
 }
 
 .bioText {
@@ -239,4 +240,21 @@ textarea {
   float: right;
   width: 30%;
   margin-right: 10%;
+}
+
+
+.container_home {
+  display: flex;
+  width: 90%;
+  opacity: 0.7;
+  margin: 0 auto;
+  margin-top: 3%;
+}
+
+.column_left_home {
+  width: 20%;
+}
+
+.column_right_home {
+  width: 80%;
 }
