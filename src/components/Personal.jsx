@@ -41,6 +41,14 @@ const Personal = ({ user, setUser }) => {
   const [number, setNumber] = useState(null)
   const [editNumber, setEditNumber] = useState(false)
   const [newNumber, setNewNumber] = useState('')
+
+  const [pos, setPos] = useState(null)
+  const [editPos, setEditPos] = useState(false)
+  const [newPos, setNewPos] = useState('')
+
+  const [works, setWorks] = useState(null)
+  const [editWorks, setEditWorks] = useState(false)
+  const [newWorks, setNewWorks] = useState('')
   
   const [image, setImage] = useState('')
 
@@ -57,6 +65,12 @@ const Personal = ({ user, setUser }) => {
 
       setHobbies(data.hobbies)
       setEditedHobbies(data.hobbies)
+
+      setPos(data.position)
+      setEditPos(data.position)
+
+      setWorks(data.works)
+      setEditWorks(data.works)
 
       if (data.gender === 1)
         setGender('Male')
@@ -124,9 +138,17 @@ const Personal = ({ user, setUser }) => {
   const updateAddr = async () => {
     const resp = await dataS.updateData(user.data.toString(), { address: newAddress }, user.token)
   }
-
+  
   const updateNumber = async () => {
     const resp = await userS.updateUserInfo(user.id.toString(), { phoneNumber: newNumber }, user.token)
+  }
+  
+  const updatePos = async () => {
+    const resp = await dataS.updateData(user.data.toString(), { position: newPos }, user.token)
+  }
+
+  const updateWorks = async () => {
+    const resp = await dataS.updateData(user.data.toString(), { works: newWorks }, user.token)
   }
 
   let textBoxStyle = {}
@@ -139,6 +161,8 @@ const Personal = ({ user, setUser }) => {
   let genderSelectorStyle = {}
   let addressChangeStyle = {}
   let numChangeStyle = {}
+  let posChangeStyle = {}
+  let worksChangeStyle = {}
 
   {edit ? textBoxStyle={ display: '' } : textBoxStyle={ display: 'none' } }
   {!edit ? bioBoxStyle={ display: '' } : bioBoxStyle={ display: 'none' } }
@@ -152,7 +176,10 @@ const Personal = ({ user, setUser }) => {
   {editGender ? genderSelectorStyle={ display: '' } : genderSelectorStyle={ display: 'none' } }
   {editAddress ? addressChangeStyle={ display: '' } : addressChangeStyle={ display: 'none' } }
   {editNumber ? numChangeStyle={ display: '' } : numChangeStyle={ display: 'none' } }
+  {editPos ? posChangeStyle={ display: '' } : posChangeStyle={ display: 'none' } }
+  {editWorks ? worksChangeStyle={ display: '' } : worksChangeStyle={ display: 'none' } }
 
+  // console.log(address)
   return (
     <>
       <div style={{backgroundColor  : 'black'}} >
@@ -173,13 +200,13 @@ const Personal = ({ user, setUser }) => {
           <h2 style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Your info:</h2>
           <h3>Name: {user.firstName} {user.lastName}</h3><img className='fpfPicture' src={image} />
           <h3>Email: {user.email}</h3>
-          <h3>Phone number: {userInf.phoneNumber ? <div>{number}</div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditNumber(!editNumber)}> Change</button></h3>
+          <h3>Phone number: {userInf.phoneNumber ? <div style={{display: 'inline-block'}}>{number}</div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditNumber(!editNumber)}> Change</button></h3>
 
           <div style={numChangeStyle}>
           <form style={{ marginRight: '85%', display: 'block' }} onSubmit={(event) => {
             event.preventDefault()
-            if (!/^([0-9]{8,})$/.test(newNumber))
-              return 
+            // if (!/^([0-9]{8,})$/.test(newNumber))
+            //   return 
             setEditNumber(!editNumber)
             setNumber(newNumber)
             updateNumber()
@@ -189,12 +216,13 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='numText' value={newNumber} onChange={(event) => setNewNumber(event.target.value)}/>
               </div>
+              <input type="checkbox" />  Private
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
           </div>
 
-          <h3>Address: {address ? <div>{address} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditAddress(!editAddress)}> Change</button></h3>
+          <h3>Address: {(address) ? <div style={{display: 'inline-block'}}>{address} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditAddress(!editAddress)}> Change</button></h3>
 
           <div style={addressChangeStyle}>
           <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
@@ -208,6 +236,7 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='adressText' value={newAddress} onChange={(event) => setNewAddress(event.target.value)}/>
               </div>
+              <input type="checkbox" />  Private
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
@@ -236,10 +265,51 @@ const Personal = ({ user, setUser }) => {
           </div>
           <button className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Edit Profile Image</button>
 
+          <h3>Position: {(pos) ? <div style={{display: 'inline-block'}}>{pos} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditPos(!editPos)}> Change</button></h3>
+
+          <div style={posChangeStyle}>
+          <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
+            event.preventDefault()
+            setEditPos(false)
+            setPos(newPos)
+            updatePos()
+          }}>
+            <fieldset>
+              <legend>Type your position :</legend>
+              <div>
+                <input type='text' id='adressText' value={newPos} onChange={(event) => setNewPos(event.target.value)}/>
+              </div>
+              <input type="checkbox" />  Private
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
+            </fieldset>
+          </form>
+          </div>
+
+          <h3>Works in: {(works) ? <div style={{display: 'inline-block'}}>{works} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditWorks(!editWorks)}> Change</button></h3>
+
+          <div style={worksChangeStyle}>
+          <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
+            event.preventDefault()
+            setEditWorks(false)
+            setWorks(newWorks)
+            updateWorks()
+          }}>
+            <fieldset>
+              <legend>Type your new workplace:</legend>
+              <div>
+                <input type='text' id='adressText' value={newWorks} onChange={(event) => setNewWorks(event.target.value)}/>
+              </div>
+              <input type="checkbox" />  Private
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
+            </fieldset>
+          </form>
+          </div>
         </div>
         </div>
         </div>  
         : ''}
+
+        <div style={{width: '90%', margin: '0 auto'}}>
         <h2>Your CV:</h2>
           <div className=''>
             <div style={bioBoxStyle} className='bioText' >
@@ -310,7 +380,8 @@ const Personal = ({ user, setUser }) => {
             editTextHobbies === 'Edit' ? setEditTextHobbies('Cancel') : setEditTextHobbies('Edit')
             setEditedHobbies(hobbies)
           }}>{editTextHobbies}</button>
-          
+          </div>
+
       </div>
     </>
   )
