@@ -18,6 +18,7 @@ import Settings from './components/Settings'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import comment from './services/comment'
+import blog from './services/blog'
 
 const About = () => {
   return (
@@ -82,7 +83,7 @@ const Blog_Home = ({ id, token, upd, setUpd }) => {
   if (blog) {
     return (
       <li>
-        <h4>{blog.title}</h4>
+        <h4>{blog.title}, time: {new Date(blog.created).toLocaleDateString()} {new Date(blog.created).toLocaleTimeString()}</h4>
         <p>{blog.body}</p>
         <button className='savebtn' style={{ display: 'inline' }} onClick={() => { navigate(`/blogs/${id}`) }}>Visit</button>
         <button className='cancelbtn' onClick={() => {
@@ -95,14 +96,33 @@ const Blog_Home = ({ id, token, upd, setUpd }) => {
   }
 }
 
+const Blog_Home1 = ({ blog}) => {
+  const navigate = useNavigate()
+  if (blog) {
+    return (
+      <li>
+        <h4>{blog.title}, time: {new Date(blog.created).toLocaleDateString()} {new Date(blog.created).toLocaleTimeString()}</h4>
+        <p>{blog.body}</p>
+        <button className='savebtn' style={{ display: 'inline' }} onClick={() => { navigate(`/blogs/${blog.id}`) }}>Visit</button>
+      </li>
+    )
+  }
+}
+
 const Home = ({ user, setUser }) => {
   const [usrData, setUsrData] = useState(null)
   const [newBlog, setNewBlog] = useState('')
+  const [newTitle, setNewTitle] = useState('')
+  const [netBlogs, setNetBlogs] = useState([])
   const navigate = useNavigate()
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
       setUsrData(data)
+
+      const blogs = await blogS.getBlogsOfNet(data.id.toString())
+      console.log(blogs)
+      setNetBlogs(blogs)
     }
     fun()
   }, [newBlog])  // user.data ?
@@ -122,12 +142,16 @@ const Home = ({ user, setUser }) => {
       comments: [],
       author: user.id.toString(),
       body: newBlog,
-      title: "Example title"
+      title: newTitle
     }
     console.log(newBlog)
     await blogS.postBlog(req, user.token)
     setNewBlog('')
+    setNewTitle('')
   }
+
+  // if (usrData)
+  //   console.log('====>', usrData.blogs)
 
   return (
     <>
@@ -185,14 +209,32 @@ const Home = ({ user, setUser }) => {
                   <h1 style={{ textAlign: 'center' }}>Post timeline:</h1>
                   <hr />
 
-                  <h2 style={{ textAlign: 'center' }}>My articles:</h2>
+                    <h2 style={{ textAlign: 'center' }}>My articles:</h2>
+                    <hr />
+                    {usrData.blogs.length ?
+                      <div style={{whiteSpace: 'pre-line'}}>
+                        <ul>
+                          {usrData.blogs.sort((a, b) => new Date(b.created) - new Date(a.created)).map((blg) =>
+                            <ul>  
+                              <Blog_Home id={blg} key={blg} token={user.token} />
+                            </ul>
+                          )}
+                        </ul>
+                      </div>
+                      :
+                      <div>
+                        No blogs :(
+                      </div>
+                    }
+
+                  <h2 style={{ textAlign: 'center' }}>Network articles:</h2>
                   <hr />
-                  {usrData.blogs.length ?
-                    <div>
+                  {usrData.network.length ?
+                    <div style={{whiteSpace: 'pre-line'}}>
                       <ul>
-                        {usrData.blogs.map((blg) =>
-                          <ul>
-                            <Blog_Home id={blg} key={blg} token={user.token} />
+                        {netBlogs.sort((a, b) => new Date(b.created) - new Date(a.created)).map((blg) =>
+                          <ul>  
+                            <Blog_Home1 blog={blg} key={blg.id  } />
                           </ul>
                         )}
                       </ul>
@@ -203,8 +245,6 @@ const Home = ({ user, setUser }) => {
                     </div>
                   }
 
-                  <h2 style={{ textAlign: 'center' }}>Network articles:</h2>
-                  <hr />
 
                   <h2 style={{ textAlign: 'center' }}>Other articles:</h2>
                   <hr />
@@ -212,7 +252,8 @@ const Home = ({ user, setUser }) => {
                   <h2 style={{ textAlign: 'center' }}>Submit new:</h2>
                   <hr />
                   <div>
-                    <textarea name="Text1" cols="40" rows="5" value={newBlog} onChange={(event) => setNewBlog(event.target.value)} ></textarea>
+                    <input style={{width: '100%', opacity: '0.7'}} placeholder='Title' value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
+                    <textarea placeholder='Body' name="Text1" cols="40" rows="5" value={newBlog} onChange={(event) => setNewBlog(event.target.value)} ></textarea>
                     <br />
                     <button type='submit' className='savebtn' onClick={uploadBlog}  >Create Blog</button>
                   </div>
@@ -440,6 +481,8 @@ const UserInfo = () => {
 }
 
 const Comment = ({cmt, user}) => {
+  if (!cmt || ! user)
+    return (<></>)
   const [author, setAuthor] = useState(null)
   useEffect(() => {
     const fun = async () => {
@@ -456,13 +499,13 @@ const Comment = ({cmt, user}) => {
   }
   
   
-  if (author) {
+  if (author && cmt) {
     return (
       <div>
       <h3>
         By: {author.firstName} {author.lastName}, time: {new Date(cmt.created).toLocaleDateString()} {new Date(cmt.created).toLocaleTimeString()}
       </h3>
-        <p>{cmt.body}</p>
+        <p style={{whiteSpace: 'pre-line'}}>{cmt.body}</p>
         <div>
           {user.id === author.id ? <button onClick={delComment} className='cancelbtn' style={{ marginLeft: '1%'}}>Delete</button> : ''}
         </div>
@@ -488,18 +531,21 @@ const BlogInfo = ({user}) => {
       const blg = await blogS.blogInfo(id.toString())
       setBlog(blg)
 
-      let commentsArray = []
-      let com
-      for (var i = 0; i < blg.comments.length; i++) {
-        com = await commentS.getComment(blg.comments[i])
-        commentsArray.push(com)
+      if (blg) {
+        let commentsArray = []
+        let com
+        for (var i = 0; i < blg.comments.length; i++) {
+          com = await commentS.getComment(blg.comments[i])
+          commentsArray.push(com)
+        }
+        setComments(commentsArray)
       }
-      commentsArray.sort((a, b) => new Date(b.created) - new Date(a.created))
-      setComments([])
-      setComments(prevComments => [...prevComments, ...commentsArray])
+      // commentsArray.sort((a, b) => new Date(b.created) - new Date(a.created))
+      // setComments([])
+      // setComments(prevComments => [...prevComments, ...commentsArray])
     }
     fun()
-  }, [upd])
+  }, [upd, comments])
 
   // if (!userInf)
   //   navigate('/')
@@ -509,6 +555,7 @@ const BlogInfo = ({user}) => {
       author: user.id,
       blog: blog.id
     }, user.token)
+    console.log(resp)
     setNewComment('')
     setUpd(!upd)
     setShowBox(false)
