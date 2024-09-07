@@ -21,6 +21,7 @@ import Login from './components/Login'
 import SignUp from './components/SignUp'
 import comment from './services/comment'
 import blog from './services/blog'
+import { js2xml } from 'xml-js'
 
 const About = () => {
   return (
@@ -119,6 +120,9 @@ const Home = ({ user, setUser }) => {
   const navigate = useNavigate()
   useEffect(() => {
     const fun = async () => {
+      if (user.email === 'root@tree.org')
+        navigate('/admin')
+
       const data = await dataS.userData(user.data.toString())
       setUsrData(data)
 
@@ -804,6 +808,163 @@ const BlogInfo = ({user}) => {
   }
 }
 
+const Admin_Page = ({user, setuser}) => {
+  const navigate = useNavigate()
+  const [allData, setAllData] = useState(null)
+  const [upd, setUpd] = useState(false)
+  const [selected, setSelected] = useState([])
+
+  // redirect to home if you are not the
+  // root or not logged in ofc
+  useEffect(() => {
+    const fun = async () => {
+      if (!user) {
+        const loggedInUser = window.localStorage.getItem('loggedInUser')
+        if (loggedInUser)
+          setuser(loggedInUser)
+        else
+          navigate('/login')
+      }
+
+      if (user) {
+        if (user.email != 'root@tree.org')
+          navigate('/home')
+        const dt = await userS.getAllUserData(user.token)
+        setAllData(dt)
+        setUpd(!upd)
+      }
+    }
+    fun()
+  }, [user])
+
+  const downloadJson_single = (id) => {
+    const filteredData = allData.find((item) => item.id === id)
+    const jsonData = JSON.stringify(filteredData)
+    const blob = new Blob([jsonData], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `data-${filteredData.firstName}.json`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const downloadXML_single = (id) => {
+    const filteredData = allData.find((item) => item.id === id)
+    const xml = js2xml({root: filteredData}, 
+      {
+        compact: true,
+        ignoreComment: true,
+        spaces: 4
+      }
+    )
+    const blob = new Blob([xml], { type: 'application/xml' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `data-${filteredData.firstName}.xml`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const downloadXML_selected = () => {
+    const filteredData = allData.filter((item) => selected.includes(item))
+    const nn = { root: filteredData.map((dt) => ({ element: dt })) }   
+
+    // console.log({root: nn})
+    const xml = js2xml({ root: nn }, 
+      {
+        compact: true,
+        ignoreComment: true,
+        spaces: 4
+      }
+    )
+    const blob = new Blob([xml], { type: 'application/xml' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'users_data.xml'
+    a.click()
+  }
+  
+  const downloadJson_selected = async () => {
+    const filteredData = allData.filter((item) => selected.includes(item))
+    const blob = new Blob([JSON.stringify(filteredData)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'users_data.json'
+    a.click()
+  }
+  
+  const downloadJson_all = async () => {
+    const blob = new Blob([JSON.stringify(allData)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'users_data.json'
+    a.click()
+  }
+
+  const downloadXML_all = async () => {
+    const nn = { root: allData.map((dt) => ({ element: dt })) }   
+    // console.log({root: nn})
+    const xml = js2xml({ root: nn }, 
+      {
+        compact: true,
+        ignoreComment: true,
+        spaces: 4
+      }
+    )
+    const blob = new Blob([xml], { type: 'application/xml' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'users_data.xml'
+    a.click()
+  }
+
+  return (
+    <div>
+      <h1 style={{  width:'100%', display: 'flex', justifyContent: 'center'}}>ADMIN PAGE</h1>
+      <hr />
+      <br />
+      <div style={{  width:'100%', display: 'flex', justifyContent: 'center'}}>
+        <button onClick={downloadJson_selected} className='savebtn' style={{background:'#662377'}}>Download selected JSON</button>
+        <button onClick={downloadXML_selected} className='savebtn' style={{background:'#a82973'}}>Download selected XML</button>
+        <button onClick={downloadJson_all} className='savebtn1' style={{background:'#ef5064'}}>Download All JSON</button>
+        <button onClick={downloadXML_all} className='savebtn1' style={{background:'#fc867d'}}>Download All XML</button>
+      </div>
+      <br />
+      {allData ? allData.map((data) =>
+        <div className='forms' style={{width: '45%', position:'relative'}}>
+          <h2>{data.email}</h2>
+          <button onClick={() => downloadJson_single(data.id)} className='savebtn' style={{display:'inline-block', marginRight:'5px'}}>Download Json</button>
+          <button onClick={() => downloadXML_single(data.id)} className='savebtn1' style={{display:'inline-block'}}>Download XML</button>
+          <div className='checkbox-container'>
+          <input
+            type="checkbox"
+            checked={selected.includes(data)}
+            onChange={(e) => {
+              if (e.target.checked)
+                setSelected([...selected, data])
+              else
+                setSelected(selected.filter((u) => u.id !== data.id))
+            }}
+
+            />
+          </div>
+          <br />
+        </div>
+      ) : ''}
+      <br />
+
+    </div>
+  )
+
+
+}
+
 const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [errorMessage1, setErrorMessage1] = useState(null)
@@ -832,7 +993,11 @@ const App = () => {
       )
       setUser(user)
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
-      navigate('/home')
+
+      if (email === 'root@tree.org')
+        navigate('/admin')
+      else
+        navigate('/home')
 
     } catch (exception) {
       setErrorMessage(exception.response.data.error)
@@ -864,6 +1029,7 @@ const App = () => {
         <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} msg={errorMessage} setMsg={setErrorMessage} msg1={errorMessage1} setMsg1={setErrorMessage1} /> : <Navigate replace to="/login" />} />
         <Route path="/profile/:id" element={<UserInfo />} />
         <Route path="/blogs/:id" element={<BlogInfo user={user}/>} />
+        <Route path="/admin" element={<Admin_Page user={user} setuser={setUser}/>} />
       </Routes>
       {/* <Footer /> */}
     </div>

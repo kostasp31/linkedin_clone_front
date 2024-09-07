@@ -1,6 +1,19 @@
 import axios from 'axios'
 const baseUrl = '/api/users'
 
+const getAllUserData = async (token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  try {
+    const resp = await axios.get(`${baseUrl}`, config)
+    return resp.data
+  }
+  catch(exception) {
+    console.log(exception)
+  }  
+}
+
 // get the info of a specific user
 const userInfo = async (id) => {
   try {
@@ -25,4 +38,4 @@ const updateUserInfo = async (id, newData, token) => {
   }
 }
 
-export default { userInfo, updateUserInfo }
+export default { getAllUserData, userInfo, updateUserInfo }
