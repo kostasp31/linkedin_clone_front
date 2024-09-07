@@ -128,7 +128,7 @@ const Personal = ({ user, setUser }) => {
   const updateGender = async () => {
     if (!selectedGender)
       return
-    console.log(selectedGender)
+    // console.log(selectedGender)
     const resp = await dataS.updateData(user.data.toString(), { gender: (selectedGender === 'Male' ? 1 : 2) }, user.token)
     setEditGender(!editGender)
     setGender(selectedGender)
@@ -154,7 +154,7 @@ const Personal = ({ user, setUser }) => {
     const resp = await dataS.updateData(user.data.toString(), {pfp: newImage}, user.token)
   }
 
-  console.log(newImage)
+  // console.log(newImage)
 
   let textBoxStyle = {}
   let bioBoxStyle = {}

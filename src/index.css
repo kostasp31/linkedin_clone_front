@@ -191,6 +191,13 @@ textarea {
     box-shadow: 0 0 0 0 #fff, 0 0 0 3px #1de9b6;
 }
 
+.savebtn:disabled,
+.savebtn[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
 .usrInfoInner {
   border: 0.05em solid black;
   width: 30%;

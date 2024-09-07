@@ -58,7 +58,7 @@ const Settings = ({ user, setUser, msg, setMsg, msg1, setMsg1 }) => {
     setEmail(newEmail)
     setEditEmail(!editEmail)
     const resp = await userS.updateUserInfo(user.id.toString(), { email: newEmail }, user.token)
-    console.log(resp.data)
+    // console.log(resp.data)
   }
 
   const changePass = async () => {

@@ -61,7 +61,7 @@ const SignUp = ({ setErrorMessage, msg }) => {
           "pfp": ''
         }
       )
-      console.log(resp)
+      // console.log(resp)
       setFirstName('')
       setLastName('')
       setPhone('')
