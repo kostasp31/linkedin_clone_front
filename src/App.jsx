@@ -64,9 +64,9 @@ const Net_Home = ({ pr }) => {
 
   if (persn) {
     return (
-      <li>
+      <div>
         <p>{persn.firstName} {persn.lastName}  <button className='buttonChange' style={{ display: 'inline' }} onClick={() => { navigate(`/profile/${pr}`) }}>Visit</button></p>
-      </li>
+      </div>
     )
   }
 }
@@ -189,9 +189,9 @@ const Home = ({ user, setUser }) => {
                     <div>
                       <ul>
                         {usrData.network.map((person) =>
-                          <ul>
+                          <div className='forms' style={{width:'90%', textAlign:''}}>
                             <Net_Home pr={person} key={person} />
-                          </ul>
+                          </div>
                         )}
                       </ul>
                     </div>
@@ -309,9 +309,8 @@ const Display_Ad = ({id, token}) => {
             </div>
         }
       </div>
-
       <button className='cancelbtn' style={{marginRight:'0', marginLeft:'auto', display:'block'}} onClick={delAd}>Delete</button>
-      <hr />
+      <br />
     </div>
     )
   }
@@ -340,11 +339,10 @@ const Display_Ad_Net = ({usrid, ad, token, useid}) => {
   // console.log(ad)
 
   return (
-  <div style={{width: '100%'}}>
+  <div className='forms' style={{width: '100%'}}>
     <h3>{ad.title}</h3>
     <p>{ad.body}</p>  
     <button disabled={disableButton} className='savebtn' onClick={addInterest}>Im Interested</button>
-    <hr />
   </div>
   )
 }
@@ -424,15 +422,15 @@ const Ads = ({ user, setUser }) => {
             <div className="column_left_home" style={{width: '50%'}}>
               <div className='usrInfoOuter' style={{ marginTop: '0' }}>
                 <div className='usrInfoInner' style={{ width: '90%' }}>
-                  <h2 style={{ textAlign: 'center' }}>My Ads:</h2>
+                  <h1 style={{ textAlign: 'center' }}>My Ads:</h1>
                   <hr />
                   {usrData.ads.length ?
                         <div style={{whiteSpace: 'pre-line'}}>
                           <ul>
                             {usrData.ads.map((ad) =>
-                              <ul>  
+                              <div className='forms' style={{width:'auto', textAlign:'left'}}>  
                                 <div><Display_Ad id={ad} key={ad} token={user.token}/></div>
-                              </ul>
+                              </div>
                             )}
                           </ul>
                         </div>
@@ -513,7 +511,6 @@ const Ads = ({ user, setUser }) => {
                             No ads yet
                           </div>
                       }
-                  <hr />
                 </div>
               </div>
             </div>
