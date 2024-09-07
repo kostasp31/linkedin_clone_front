@@ -13,6 +13,7 @@ import {
 } from 'react-router-dom'
 import data from './services/data'
 import Personal from './components/Personal'
+import Network from './components/Network'
 import Notification from './components/Notification'
 import Settings from './components/Settings'
 import Login from './components/Login'
@@ -266,34 +267,6 @@ const Home = ({ user, setUser }) => {
           </div>
           : ''}
 
-      </div>
-    </>
-  )
-}
-
-const Network = ({ user, setUser }) => {
-  const navigate = useNavigate()
-  const logout = () => {
-    setUser(null)
-    window.localStorage.clear()
-    navigate('/')
-  }
-
-  return (
-    <>
-      <div style={{ backgroundColor: 'black' }} >
-        <Link className='button' to="/" >Home</Link>
-        <Link className='button' to="/home/network" style={{ backgroundColor: '#48c1df' }}>Network</Link>
-        <Link className='button' to="/home/ads">Ads</Link>
-        <Link className='button' to="/home/messages">Messages</Link>
-        <Link className='button' to="/home/notifications">Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal</Link>
-        <Link className='button' to="/home/settings">Settings</Link>
-        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
-      </div>
-      {/* <img src='../name.png' /> */}
-      <div>
-        Your network
       </div>
     </>
   )

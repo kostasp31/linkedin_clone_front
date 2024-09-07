@@ -49,8 +49,9 @@ const Personal = ({ user, setUser }) => {
   const [works, setWorks] = useState(null)
   const [editWorks, setEditWorks] = useState(false)
   const [newWorks, setNewWorks] = useState('')
-  
-  const [image, setImage] = useState('')
+
+  const [image, setImage] = useState(null)
+  const [newImage, setNewImage] = useState('')
 
   useEffect(() => {
     const fun = async () => {
@@ -67,10 +68,8 @@ const Personal = ({ user, setUser }) => {
       setEditedHobbies(data.hobbies)
 
       setPos(data.position)
-      setEditPos(data.position)
 
       setWorks(data.works)
-      setEditWorks(data.works)
 
       if (data.gender === 1)
         setGender('Male')
@@ -150,6 +149,12 @@ const Personal = ({ user, setUser }) => {
   const updateWorks = async () => {
     const resp = await dataS.updateData(user.data.toString(), { works: newWorks }, user.token)
   }
+
+  const updateImage = async () => {
+    const resp = await dataS.updateData(user.data.toString(), {pfp: newImage}, user.token)
+  }
+
+  console.log(newImage)
 
   let textBoxStyle = {}
   let bioBoxStyle = {}
@@ -263,14 +268,13 @@ const Personal = ({ user, setUser }) => {
             </fieldset>
           </form>
           </div>
-          <button className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Edit Profile Image</button>
 
           <h3>Position: {(pos) ? <div style={{display: 'inline-block'}}>{pos} </div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditPos(!editPos)}> Change</button></h3>
 
           <div style={posChangeStyle}>
           <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
             event.preventDefault()
-            setEditPos(false)
+            setEditPos(!editPos)
             setPos(newPos)
             updatePos()
           }}>
@@ -290,7 +294,7 @@ const Personal = ({ user, setUser }) => {
           <div style={worksChangeStyle}>
           <form style={{ marginRight: '75%', display: 'block' }} onSubmit={(event) => {
             event.preventDefault()
-            setEditWorks(false)
+            setEditWorks(!editWorks)
             setWorks(newWorks)
             updateWorks()
           }}>
@@ -304,9 +308,22 @@ const Personal = ({ user, setUser }) => {
             </fieldset>
           </form>
           </div>
+
+          <div>
+            Choose an image to upload <br />for your profile picture:
+          </div>
+          <input type='file' accept="image/*" style={{border: '1px solid'}} onChange={(event) => setNewImage(event.target.value)} />
+          <button className='buttonChange' style={{ background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}} onClick={(event) => {
+            event.preventDefault()
+            setImage(newImage)
+            updateImage()
+          }}>
+          Submit image
+          </button>
+
         </div>
         </div>
-        </div>  
+        </div>
         : ''}
 
         <div style={{width: '90%', margin: '0 auto'}}>
@@ -388,3 +405,6 @@ const Personal = ({ user, setUser }) => {
 }
 
 export default Personal
+
+
+          
