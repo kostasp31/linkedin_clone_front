@@ -813,6 +813,7 @@ const Admin_Page = ({user, setuser}) => {
   const [allData, setAllData] = useState(null)
   const [upd, setUpd] = useState(false)
   const [selected, setSelected] = useState([])
+  const [search, setSearch] = useState('')
 
   // redirect to home if you are not the
   // root or not logged in ofc
@@ -936,26 +937,38 @@ const Admin_Page = ({user, setuser}) => {
         <button onClick={downloadXML_all} className='savebtn1' style={{background:'#fc867d'}}>Download All XML</button>
       </div>
       <br />
-      {allData ? allData.map((data) =>
-        <div className='forms' style={{width: '45%', position:'relative'}}>
-          <h2>{data.email}</h2>
-          <button onClick={() => downloadJson_single(data.id)} className='savebtn' style={{display:'inline-block', marginRight:'5px'}}>Download Json</button>
-          <button onClick={() => downloadXML_single(data.id)} className='savebtn1' style={{display:'inline-block'}}>Download XML</button>
-          <div className='checkbox-container'>
-          <input
-            type="checkbox"
-            checked={selected.includes(data)}
-            onChange={(e) => {
-              if (e.target.checked)
-                setSelected([...selected, data])
-              else
-                setSelected(selected.filter((u) => u.id !== data.id))
-            }}
-
-            />
-          </div>
-          <br />
+      <div className='forms'>
+        <div style={{  width:'100%', display: 'flex', justifyContent: 'center'}}>
+          <h3>Search By Email </h3><br />
         </div>
+        <div style={{  width:'100%', display: 'flex', justifyContent: 'center'}}>
+          <input type='text' value={search} onChange={(event) => setSearch(event.target.value)}/>
+        </div>
+      </div>
+      <br />
+      {allData ? allData.map((data) =>
+        {if (data.email.includes(search)) {
+          return (
+          <div className='forms' style={{width: '45%', position:'relative'}}>
+            <h2>{data.email}</h2>
+            <button onClick={() => downloadJson_single(data.id)} className='savebtn' style={{display:'inline-block', marginRight:'5px'}}>Download Json</button>
+            <button onClick={() => downloadXML_single(data.id)} className='savebtn1' style={{display:'inline-block'}}>Download XML</button>
+            <div className='checkbox-container'>
+            <input
+              type="checkbox"
+              checked={selected.includes(data)}
+              onChange={(e) => {
+                if (e.target.checked)
+                  setSelected([...selected, data])
+                else
+                  setSelected(selected.filter((u) => u.id !== data.id))
+              }}
+
+              />
+            </div>
+            <br />
+          </div>
+      )}}
       ) : ''}
       <br />
 
