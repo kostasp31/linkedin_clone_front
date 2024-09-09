@@ -171,7 +171,6 @@ const Home = ({ user, setUser }) => {
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
-
       <div>
 
         {usrData && user ?
@@ -191,7 +190,7 @@ const Home = ({ user, setUser }) => {
                   <hr />
                   {usrData.network.length ?
                     <div>
-                      <ul>
+                      <ul style={{paddingLeft: '0'}}>
                         {usrData.network.map((person) =>
                           <div className='forms' style={{width:'90%', textAlign:''}}>
                             <Net_Home pr={person} key={person} />
@@ -296,11 +295,12 @@ const Display_Ad = ({id, token}) => {
   if (adInfo) {
     return (
     <div style={{width: '100%'}}>
-      <h3>{adInfo.title}</h3>
-      <p>{adInfo.body}</p>  
+      <h3 style={{ textAlign: 'center' }}>{adInfo.title}</h3>
+      <p style={{paddingLeft:'20px'}}>{adInfo.body}</p>  
 
-      <div>
+      <div style={{paddingLeft:'20px'}}>
         <h3>Interest:</h3>
+        <button className='cancelbtn' style={{float:'right', marginRight:'20px', marginLeft:'auto'}} onClick={delAd}>Delete</button>
         {
           adInfo.interested.length ?
             adInfo.interested.map((prsn) =>
@@ -313,7 +313,6 @@ const Display_Ad = ({id, token}) => {
             </div>
         }
       </div>
-      <button className='cancelbtn' style={{marginRight:'0', marginLeft:'auto', display:'block'}} onClick={delAd}>Delete</button>
       <br />
     </div>
     )
@@ -430,7 +429,7 @@ const Ads = ({ user, setUser }) => {
                   <hr />
                   {usrData.ads.length ?
                         <div style={{whiteSpace: 'pre-line'}}>
-                          <ul>
+                          <ul style={{paddingLeft: '0'}}>
                             {usrData.ads.map((ad) =>
                               <div className='forms' style={{width:'auto', textAlign:'left'}}>  
                                 <div><Display_Ad id={ad} key={ad} token={user.token}/></div>
@@ -480,7 +479,7 @@ const Ads = ({ user, setUser }) => {
                         netAds ?
                           <div>
                             {netAds.map((ad) =>
-                              <ul>  
+                              <ul style={{paddingLeft: '0'}}>  
                                 <div><Display_Ad_Net ad={ad} key={Math.floor(Math.random() * 10)} usrid={user.id} token={user.token} useid={true}/></div>
                               </ul>
                             )}
@@ -504,7 +503,7 @@ const Ads = ({ user, setUser }) => {
                               else
                                 return true
                             }).map((ad) =>
-                              <ul>  
+                              <ul style={{paddingLeft: '0'}}>  
                                 <div><Display_Ad_Net ad={ad} key={Math.floor(Math.random() * 10)} usrid={user.id} token={user.token} useid={false}/></div>
                               </ul>
                             )}
@@ -651,6 +650,8 @@ const UserInfo = () => {
             </div>
           </div>
           : ''}
+
+        <div style={{width: '90%', margin: '0 auto'}}>
         <h2>{pre} CV:</h2>
         <div className=''>
           <div className='bioText' >
@@ -675,6 +676,7 @@ const UserInfo = () => {
             <div style={{ whiteSpace: 'pre-line' }}>{hobbies}</div>
             : ''
           }
+        </div>
         </div>
 
       </div>
@@ -703,15 +705,17 @@ const Comment = ({cmt, user}) => {
   
   if (author && cmt) {
     return (
-      <div>
-      <h3>
-        By: {author.firstName} {author.lastName}, time: {new Date(cmt.created).toLocaleDateString()} {new Date(cmt.created).toLocaleTimeString()}
-      </h3>
-        <p style={{whiteSpace: 'pre-line'}}>{cmt.body}</p>
+      <div className='biotext' style={{background:'rgba(231, 215, 193, 0.7)'}}>
         <div>
-          {user.id === author.id ? <button onClick={delComment} className='cancelbtn' style={{ marginLeft: '1%'}}>Delete</button> : ''}
+          <h3>
+            By: {author.firstName} {author.lastName}, time: {new Date(cmt.created).toLocaleDateString()} {new Date(cmt.created).toLocaleTimeString()}
+          </h3>
+          <p style={{whiteSpace: 'pre-line'}}>{cmt.body}</p>
+          <div>
+            {user.id === author.id ? <button onClick={delComment} className='cancelbtn' style={{ marginLeft: '1%'}}>Delete</button> : ''}
+          </div>
+          <hr />
         </div>
-        <hr />
       </div>
     )
   }
@@ -747,7 +751,7 @@ const BlogInfo = ({user}) => {
       // setComments(prevComments => [...prevComments, ...commentsArray])
     }
     fun()
-  }, [upd, comments])
+  }, [upd])
 
   // if (!userInf)
   //   navigate('/')
@@ -772,37 +776,40 @@ const BlogInfo = ({user}) => {
   if (blog) {
     return (
       <>
-        <h2>{blog.title}</h2>
+        <h1 style={{textAlign:'center'}}>{blog.title}</h1>
         <div className=''>
-          <div className='bioText' >
+          <div className='bioText' style={{marginRight: '4%', marginLeft:'4%', width:'auto'}} >
             <div style={{ whiteSpace: 'pre-line' }}>{blog.body}</div>
           </div>
         </div>
-        <h2>Comments:</h2>
-        {
-          blog.comments.length ?
-          comments.map((cmt) =>
-            <Comment cmt={cmt} user={user}/>
-          )
-            :
-            'No comments'
-        }
-        {
-          user ?
-            <div style={{ whiteSpace: 'pre-line' }}>
-              <div>
-                <button  className='savebtn' style={btnStyle} onClick={() => setShowBox(!showBox)}>Comment</button>
+
+        <div style={{marginRight: '4%', marginLeft:'4%', width:'auto'}}>
+          <h2>Comments:</h2>
+          {
+            blog.comments.length ?
+            comments.map((cmt) =>
+              <Comment cmt={cmt} user={user}/>
+            )
+              :
+              'No comments'
+          }
+          {
+            user ?
+              <div style={{ whiteSpace: 'pre-line' }}>
+                <div>
+                  <button  className='savebtn' style={btnStyle} onClick={() => setShowBox(!showBox)}>Comment</button>
+                </div>
+                <div style={boxStyle}>
+                  <textarea name="Text2" cols="40" rows="5" value={newComment} onChange={(event) => setNewComment(event.target.value)}></textarea>
+                  <button onClick={postComment} className='savebtn' >Post comment</button><button onClick={() => {
+                    setShowBox(false)
+                    setNewComment('')
+                  }} className='cancelbtn' >Cancel</button>
+                </div>
               </div>
-              <div style={boxStyle}>
-                <textarea name="Text2" cols="40" rows="5" value={newComment} onChange={(event) => setNewComment(event.target.value)}></textarea>
-                <button onClick={postComment} className='savebtn' >Post comment</button><button onClick={() => {
-                  setShowBox(false)
-                  setNewComment('')
-                }} className='cancelbtn' >Cancel</button>
-              </div>
-            </div>
-          : 'You must log in to comment'
-        }
+            : 'You must log in to comment'
+          }
+        </div>
       </>
     )
   }
@@ -925,9 +932,17 @@ const Admin_Page = ({user, setuser}) => {
     a.click()
   }
 
+  const logout = () => {
+    setuser(null)
+    window.localStorage.clear()
+    navigate('/')
+  }
+
   return (
     <div>
-      <h1 style={{  width:'100%', display: 'flex', justifyContent: 'center'}}>ADMIN PAGE</h1>
+      <div>
+        <h1 style={{  width:'100%', textAlign:'center', justifyContent: 'center'}}>ADMIN PAGE <button className='savebtn' style={{ float:'right', backgroundColor: '#ff1a1a'}} onClick={logout} >Logout</button></h1>
+      </div>
       <hr />
       <br />
       <div style={{  width:'100%', display: 'flex', justifyContent: 'center'}}>
