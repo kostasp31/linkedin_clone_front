@@ -33,14 +33,26 @@ const About = () => {
 
 const Welcome = () => {
   return (
-    <>
-      <div style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} >
-        <Link className='button' to="/login" style={{ float: 'right' }} >Login</Link>
-        <Link className='button' to="/register" style={{ float: 'right' }}>Join Now</Link>
-        <Link className='button' to="/about">about</Link>
+    <div>
+      <div className='logoDiv' >
+        <a href='/' ><img src='../name.png' className='imageLogo' /></a>
       </div>
-      {/* <img src='../name.png' /> */}
-    </>
+
+      <div className='formGrandpa'>
+        <div className='formParent'>
+
+          <div className='forms' style={{width: '600px',  backgroundColor: 'rgba(255,255,255,0.6)'}}>
+            <img src='./thunder.png' className='imageLogo'/>
+            <h2 className='blk'>Get started with PluggedIn</h2>
+            <div style={{marginBottom: '2%'}}>
+              <Link to="/login"><button className='savebtn' style={{marginRight: '5px', background:'#22B8D9'}}>Login</button></Link>
+              <Link to="/register" ><button className='savebtn'>Join Now</button></Link>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -635,6 +647,9 @@ const UserInfo = () => {
 
   return (
     <>
+      <header>
+        <Link className='button' to='/home' style={{float:'right'}}>Back to Home</Link>
+      </header>
       <div>
         {(usrData && userInf) ?
           <div className='usrInfoOuter'>
@@ -776,7 +791,10 @@ const BlogInfo = ({user}) => {
   if (blog) {
     return (
       <>
-        <h1 style={{textAlign:'center'}}>{blog.title}</h1>
+        <header>
+          <Link className='button' to='/home' style={{float:'right'}}>Back to Home</Link>
+        </header>
+        <h1 style={{textAlign:'center', marginTop:'0px',paddingTop:'80px',paddingBottom:'30px'}}>{blog.title}</h1>
         <div className=''>
           <div className='bioText' style={{marginRight: '4%', marginLeft:'4%', width:'auto'}} >
             <div style={{ whiteSpace: 'pre-line' }}>{blog.body}</div>

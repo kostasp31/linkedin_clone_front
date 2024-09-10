@@ -10,16 +10,6 @@ import {
   Navigate
 } from 'react-router-dom'
 
-const SearchResult = ({ result }) => {
-  const navigate = useNavigate()
-  return (
-    <div>
-      <hr />
-      {result.fullName}
-      <button className='savebtn' onClick={() => { navigate(`/profile/${result.id}`) }}>Visit Profile</button>
-    </div>
-  )
-}
 
 const OneConnected = ({ pr }) => {
   const [persn, setPersn] = useState('')
@@ -30,14 +20,14 @@ const OneConnected = ({ pr }) => {
       const person = await userS.userInfo(pr)
       setPersn(person)
       // console.log(persn)
-
+      
       const personData = await dataS.userData(person.userData.toString())
       setPrData(personData)
       // console.log(prData)
     }
     fun()
   }, [])
-
+  
   const printPfP = () => {
     if (pr.pfp === null) {
       return ('no pfp')
@@ -45,7 +35,7 @@ const OneConnected = ({ pr }) => {
       return (<img style={{ float: 'right', width: '10%' }} src={persn.pfp} />)
     }
   }
-
+  
   const printWorks = () => {
     if (prData.works === null) {
       return ('...')
@@ -53,7 +43,7 @@ const OneConnected = ({ pr }) => {
       return (prData.works)
     }
   }
-
+  
   const printPos = () => {
     if (prData.position === null) {
       return ('...')
@@ -61,8 +51,8 @@ const OneConnected = ({ pr }) => {
       return (prData.position)
     }
   }
-
-
+  
+  
   if (persn) {
     return (
       <div>
@@ -77,37 +67,40 @@ const OneConnected = ({ pr }) => {
   }
 }
 
+const SearchResult = ({ result }) => {
+  const navigate = useNavigate()
+  return (
+    <div>
+      <hr />
+      {result.fullName}
+      <button 
+        className='savebtn'
+        style={{float:'right', paddingTop:'4px', paddingBottom:'4px', paddingLeft:'6px', paddingRight:'6px'}} 
+        onClick={() => { navigate(`/profile/${result.id}`) }}>Visit Profile</button>
+    </div>
+  )
+}
 
 const Network = ({ user, setUser }) => {
-
+  
   const [usrData, setUsrData] = useState(null)
+  const [newSearch, setNewSearch] = useState('')
+  const [searchList, setSearchList] = useState([])
+
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
       setUsrData(data)
+
+      const allUsers = await userS.getAllUserData(user.token)
+      let fullNames = []
+      for (let usr of allUsers) {
+        fullNames.push({ fullName: usr.firstName + ' ' + usr.lastName, id: usr.id })
+      }
+      setSearchList(fullNames)
     }
     fun()
   }, [])
-
-  const [newSearch, setNewSearch] = useState('')
-  const [searchList, setSearchList] = useState([])
-
-  const onChangeHandler = async (value) => {
-    setNewSearch(value)
-    const allUsers = await userS.getAllUserData(user.token)
-    let fullNames = []
-    for (let usr of allUsers) {
-      fullNames.push({ fullName: usr.firstName + ' ' + usr.lastName, id: usr.id })
-    }
-    let matches = []
-    for (let i = 0; i < fullNames.length; i++) {
-      if (fullNames[i].fullName.toLowerCase().includes(newSearch.toLowerCase())) {
-        matches.push(fullNames[i])
-      }
-    }
-    console.log(matches)
-    setSearchList(matches)
-  }
 
   const navigate = useNavigate()
   if (!user)
@@ -139,11 +132,13 @@ const Network = ({ user, setUser }) => {
                 <div className='usrInfoInner' style={{ width: '90%' }}>
                   <h1 style={{ textAlign: 'center' }}>SEARCH</h1>
                   <h2 style={{ textAlign: 'center' }}>Search users by name<br />
-                    <input style={{ width: '100%' }} value={newSearch} onChange={(event) => onChangeHandler(event.target.value)} />
+                    <input style={{ width: '100%' }} value={newSearch} onChange={(event) => setNewSearch(event.target.value)} />
                   </h2>
                   <ul>
-                    {searchList.map((res) =>
-                      <SearchResult result={res} key={res} />
+                    {searchList.map((res) =>{
+                      if (res.fullName.toLowerCase().includes(newSearch.toLowerCase()) && newSearch)
+                        return (<SearchResult result={res} key={res.id} />)
+                      }
                     )}
                   </ul>
                 </div>

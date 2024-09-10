@@ -151,7 +151,7 @@ const Personal = ({ user, setUser }) => {
   }
 
   const updateImage = async () => {
-    const resp = await dataS.updateData(user.data.toString(), {pfp: newImage}, user.token)
+    const resp = await userS.updateUserInfo(user.id.toString(), {pfp: newImage}, user.token)
   }
 
   // console.log(newImage)
@@ -310,9 +310,9 @@ const Personal = ({ user, setUser }) => {
           </div>
 
           <div>
-            Choose an image to upload <br />for your profile picture:
+            Paste here an image link <br />for your profile picture:
           </div>
-          <input type='file' accept="image/*" style={{border: '1px solid'}} onChange={(event) => setNewImage(event.target.value)} />
+          <input accept="image/*" style={{border: '1px solid', }} onChange={(event) => setNewImage(event.target.value)} />
           <button className='buttonChange' style={{ background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}} onClick={(event) => {
             event.preventDefault()
             setImage(newImage)
