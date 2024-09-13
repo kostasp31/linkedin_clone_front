@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom'
 
 
-const OneConnected = ({ pr }) => {
+const OneConnected = ({ user, usrData, pr }) => {
   const [persn, setPersn] = useState('')
   const [prData, setPrData] = useState('')
   const navigate = useNavigate()
@@ -52,7 +52,12 @@ const OneConnected = ({ pr }) => {
     }
   }
   
-  
+  const removeHandler = async () => {
+    setPersn('')
+    await dataS.deleteData(usrData.id, 'network', persn.id, user.token) // remove from both networks
+    await dataS.deleteDataNp(prData.id, 'network', user.id)
+  }
+
   if (persn) {
     return (
       <div>
@@ -61,14 +66,43 @@ const OneConnected = ({ pr }) => {
         <h3>Works in: {printWorks()}</h3>
         <h3>Current position: {printPos()}</h3>
         <button className='savebtn' onClick={() => { navigate(`/profile/${pr}`) }}>Visit Profile</button>
-        <button className='cancelbtn'>Remove from Network</button>
+        <button className='cancelbtn' onClick={removeHandler} >Remove from Network</button>
       </div>
     )
   }
 }
 
-const SearchResult = ({ result }) => {
+const SearchResult = ({ user, usrData, result }) => {
   const navigate = useNavigate()
+
+  const [persn, setPersn] = useState('')
+  const [prData, setPrData] = useState('')
+  const [showSend, setShowSend] = useState(true)
+  useEffect(() => {
+    const fun = async () => {
+      const person = await userS.userInfo(result.id)
+      setPersn(person)
+      // console.log(persn)
+      
+      const personData = await dataS.userData(person.userData.toString())
+      setPrData(personData)
+      // console.log(prData)
+      // if (await usrData.requestsSent.includes(persn.id)){    // TODO: ACCEPT BUTTON NOT SHOWN WHEN:
+      //   setShowSend(false)                                   // PERSN ALREADY IN NETWORK/SENT/RECEIVED
+      // }    
+      // if(await usrData.requestsSent.includes(persn.id)){
+      //   setShowSend(false)
+      // }
+      // console.log(usrData.requestsSent)
+    }
+    fun()
+  }, [])
+
+  const sendHandler = async () => {
+    await dataS.updateData(usrData.id, {requestsSent: `${persn.id}`}, user.token)
+    await dataS.updateDataNp(prData.id, {requestsReceived: `${user.id}`})
+  }
+
   return (
     <div>
       <hr />
@@ -76,7 +110,17 @@ const SearchResult = ({ result }) => {
       <button 
         className='savebtn'
         style={{float:'right', paddingTop:'4px', paddingBottom:'4px', paddingLeft:'6px', paddingRight:'6px'}} 
-        onClick={() => { navigate(`/profile/${result.id}`) }}>Visit Profile</button>
+        onClick={() => { navigate(`/profile/${result.id}`) }}>
+        Visit Profile
+      </button>
+      {showSend ?
+      <button 
+        className='savebtn'
+        style={{background:'green', float:'right', paddingTop:'4px', paddingBottom:'4px', paddingLeft:'6px', paddingRight:'6px'}}
+        onClick={sendHandler}>
+        Send network request
+      </button>
+      : ''}
     </div>
   )
 }
@@ -137,7 +181,7 @@ const Network = ({ user, setUser }) => {
                   <ul>
                     {searchList.map((res) =>{
                       if (res.fullName.toLowerCase().includes(newSearch.toLowerCase()) && newSearch)
-                        return (<SearchResult result={res} key={res.id} />)
+                        return (<SearchResult user={user} usrData={usrData} result={res} key={res.id} />)
                       }
                     )}
                   </ul>
@@ -151,7 +195,7 @@ const Network = ({ user, setUser }) => {
                   {usrData.network.length ?
                     <ul>
                       {usrData.network.map((person) =>
-                        <OneConnected pr={person} key={person} />
+                        <OneConnected user={user} usrData={usrData} pr={person} key={person} />
                       )}
                     </ul>
                     :

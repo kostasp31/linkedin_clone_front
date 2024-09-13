@@ -15,7 +15,7 @@ import {
 import data from './services/data'
 import Personal from './components/Personal'
 import Network from './components/Network'
-import Notification from './components/Notification'
+import Notifications from './components/Notifications'
 import Settings from './components/Settings'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
@@ -567,34 +567,6 @@ const Messages = ({ user, setUser }) => {
   )
 }
 
-const Notifications = ({ user, setUser }) => {
-  const navigate = useNavigate()
-  const logout = () => {
-    setUser(null)
-    window.localStorage.clear()
-    navigate('/')
-  }
-
-  return (
-    <>
-      <div style={{ backgroundColor: 'black' }} >
-        <Link className='button' to="/" >Home</Link>
-        <Link className='button' to="/home/network">Network</Link>
-        <Link className='button' to="/home/ads">Ads</Link>
-        <Link className='button' to="/home/messages">Messages</Link>
-        <Link className='button' to="/home/notifications" style={{ backgroundColor: '#48c1df' }}>Notifications</Link>
-        <Link className='button' to="/home/personal_info">Personal</Link>
-        <Link className='button' to="/home/settings">Settings</Link>
-        <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
-      </div>
-      {/* <img src='../name.png' /> */}
-      <div>
-        Your notif
-      </div>
-    </>
-  )
-}
-
 const Footer = () => {
   return (
     <div className='footer'>
@@ -603,7 +575,7 @@ const Footer = () => {
   )
 }
 
-const UserInfo = () => {
+const UserInfo = ({ogUser, ogData}) => {
   const [usrData, setUsrData] = useState(null)
   const [userInf, setUserInf] = useState(null)
   const [cv, setCv] = useState('')
@@ -1015,6 +987,7 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [errorMessage1, setErrorMessage1] = useState(null)
   const [user, setUser] = useState(null)
+  const [usrData, setUserData] = useState(null)
 
   const navigate = useNavigate()
 
@@ -1025,6 +998,11 @@ const App = () => {
       setUser(user)
       // noteService.setToken(user.token)
     }
+    const fun = async () => {
+      const data = await dataS.userData(user.data.toString())
+      setUserData(data)
+    }
+    fun()
   }, [])
 
   const loginUser = async (event, email, password) => {
@@ -1073,7 +1051,7 @@ const App = () => {
         <Route path="/home/notifications" element={user ? <Notifications user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/personal_info" element={user ? <Personal user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} msg={errorMessage} setMsg={setErrorMessage} msg1={errorMessage1} setMsg1={setErrorMessage1} /> : <Navigate replace to="/login" />} />
-        <Route path="/profile/:id" element={<UserInfo />} />
+        <Route path="/profile/:id" element={<UserInfo ogUser={user} ogData={usrData} />} />
         <Route path="/blogs/:id" element={<BlogInfo user={user}/>} />
         <Route path="/admin" element={<Admin_Page user={user} setuser={setUser}/>} />
       </Routes>
