@@ -343,3 +343,24 @@ ul {
   background-position: center center;
   background-size: cover;
 }
+
+
+.input-container {
+  position: relative;
+}
+
+#send-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  font-size: 14px;
+  border-radius: 40px;
+  /* width: 35px; */
+  height: 35px;
+  text-align: center;
+}

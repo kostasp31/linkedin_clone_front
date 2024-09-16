@@ -579,6 +579,12 @@ const Messages = ({ user, setUser }) => {
       setMyData(mydata)
     }
     fun()
+
+    setTimeout(() => {
+      console.log('This will run after 1 second!')
+      fun()
+    }, 1000);
+
   }, [activeChat])
 
 
@@ -642,11 +648,23 @@ const Messages = ({ user, setUser }) => {
                   <hr />
 
                   {allChats.length ?
-                    allChatsInfo.map((ch) =>
-                      <div onClick={() => usrClick(ch)}>
-                        {ch.firstName} {ch.lastName}
-                      </div>
-                    )
+                    allChatsInfo.map((ch) => {
+                      if (activeUser) {
+                        return (
+                        <div className={activeUser.id === ch.id ? 'savebtn1' : 'savebtn'} style={{textAlign: 'center'}} onClick={() => usrClick(ch)}>
+                          {ch.firstName} {ch.lastName}
+                        </div>
+                        )
+                      }
+                      else {
+                        return (
+                        <div className='savebtn' style={{textAlign: 'center'}} onClick={() => usrClick(ch)}>
+                          {ch.firstName} {ch.lastName}
+                        </div>
+                        )
+
+                      }
+                    })
                   : 'Loading'}
 
                 </div>
@@ -655,49 +673,56 @@ const Messages = ({ user, setUser }) => {
 
             <div className="column_right_home" style={{width: '100%'}}>
               <div className='usrInfoOuter' style={{ marginTop: '0' }}>
-                <div className='usrInfoInner' style={{ width: '100%' , overflowY: 'scroll', height: '80vh', flexDirection: 'column-reverse', display:'flex'}}>
+                <div className='usrInfoInner' style={{ width: '100%' , overflowY: 'scroll', height: '80vh', flexDirection: 'column-reverse', display:'flex'}} >
                   {activeChat && activeUser && myData ? (
                     <div>
-                      <h2 style={{ textAlign: 'left', position:'sticky' }}>{activeUser.firstName} {activeUser.lastName}</h2>
-                      <hr />
-                      {activeChat.messages.map((ms) => (
-                        <div className='message-container'>
-                            {ms.user !== user.id ? 
+                      <div style={{position: 'sticky'}}>
+                        <h2 style={{ textAlign: 'left', position:'sticky' }}>{activeUser.firstName} {activeUser.lastName}</h2>
+                        <hr />
+                      </div>
+
+                      <div>
+                        {activeChat.messages.map((ms) => (
+                          <div className='message-container'>
+                              {ms.user !== user.id ? 
+                                <div>
+                                  <img src={activeUser.pfp} style={{marginRight: '10px'}} className='msgImage'/>
+                                </div> : ''
+                              }
+                                  
+                            <div className={ms.user === user.id ? 'sent-by-me' : 'sent-by-other'}> 
+                                <div>
+                                  <div>
+                                    <h3>{ms.body}</h3>
+                                  </div>
+                                </div>
+
+                            </div>
+                            {ms.user === user.id ? 
                               <div>
-                                <img src={activeUser.pfp} style={{marginRight: '10px'}} className='msgImage'/>
+                                <img src={myData.pfp} style={{marginLeft: '10px'}} className='msgImage'/>
                               </div> : ''
                             }
-                                
-                          <div className={ms.user === user.id ? 'sent-by-me' : 'sent-by-other'}> 
-                              <div>
-                                <div>
-                                  <h3>{ms.body}</h3>
-                                </div>
-                              </div>
-
+                            <br />
                           </div>
-                          {ms.user === user.id ? 
-                            <div>
-                              <img src={myData.pfp} style={{marginLeft: '10px'}} className='msgImage'/>
-                            </div> : ''
-                          }
-                          <br />
+                        ))}
+                        <div class="input-container">
+                          <input 
+                            id="input-field"
+                            value={newMessage} 
+                            style={{width: '100%', opacity: '0.7', height:'60px' }}
+                            placeholder={`Message ${activeUser.firstName}`}
+                            onChange={(event) => setNewMessage(event.target.value)}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') {
+                                sendMessage()
+                              }
+                            }}
+                            />
+                          <button className='buttonChange' style={{ background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}} id="send-button" type='submit' onClick={sendMessage}>{'Send'}</button>
                         </div>
-                      ))}
-                      <div>
-                        <input 
-                          value={newMessage} 
-                          style={{width: '100%', opacity: '0.7', height:'60px' }}
-                          placeholder={`Message ${activeUser.firstName}`}
-                          onChange={(event) => setNewMessage(event.target.value)}
-                          onKeyDown={e => {
-                            if (e.key === 'Enter') {
-                              sendMessage()
-                            }
-                          }}
-                          />
-                        <button type='submit' onClick={sendMessage}>Send</button>
                       </div>
+
                     </div>
                     ) : (
                       <div>
