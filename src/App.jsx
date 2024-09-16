@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import loginS from './services/login'
 import registerS from './services/register'
 import dataS from './services/data'
@@ -551,41 +551,49 @@ const Messages = ({ user, setUser }) => {
   const [newMessage, setNewMessage] = useState('')
   const [upd, setUpd] = useState(false)
   const navigate = useNavigate()
+
+  const timerRef = useRef(null);
+  const fun = async () => {
+    console.log('updatedddddddddddddddddd')
+    const data = await dataS.userData(user.data.toString())
+    setUsrData(data)
+
+
+    const chatDataPromises = data.chats.map(async (chat) => {
+      const chatData = await chatS.getChat(chat)
+      return chatData
+    })
+    const chatDataArray = await Promise.all(chatDataPromises)
+    setChats(chatDataArray)
+    console.log(chatDataArray)
+    
+    const chatInfoPromises = chatDataArray.map(async (chat) => {
+      let chatInfo
+      if (chat.person1 === user.id)
+        chatInfo = await userS.userInfo(chat.person2)
+      else
+        chatInfo = await userS.userInfo(chat.person1)
+      return chatInfo
+    })
+    const chatInfoArray = await Promise.all(chatInfoPromises)
+    setChatsInfo(chatInfoArray)
+
+    const mydata = await userS.userInfo(user.id.toString())
+    setMyData(mydata)
+  }
+
   useEffect(() => {
-    const fun = async () => {
-      const data = await dataS.userData(user.data.toString())
-      setUsrData(data)
-
-
-      const chatDataPromises = data.chats.map(async (chat) => {
-        const chatData = await chatS.getChat(chat)
-        return chatData
-      })
-      const chatDataArray = await Promise.all(chatDataPromises)
-      setChats(chatDataArray)
-      
-      const chatInfoPromises = chatDataArray.map(async (chat) => {
-        let chatInfo
-        if (chat.person1 === user.id)
-          chatInfo = await userS.userInfo(chat.person2)
-        else
-          chatInfo = await userS.userInfo(chat.person1)
-        return chatInfo
-      })
-      const chatInfoArray = await Promise.all(chatInfoPromises)
-      setChatsInfo(chatInfoArray)
-
-      const mydata = await userS.userInfo(user.id.toString())
-      setMyData(mydata)
-    }
-    fun()
-
-    setTimeout(() => {
-      console.log('This will run after 1 second!')
+    timerRef.current = setInterval(() => {
+      console.log('This will run every 1 second!')
       fun()
-    }, 1000);
+    }, 2000)
+    return () => {
+      clearInterval(timerRef.current)
+    }
 
   }, [activeChat])
+  
+
 
 
   const logout = () => {
@@ -611,7 +619,7 @@ const Messages = ({ user, setUser }) => {
       return
     }
     chatS.updateChat(activeChat.id, { body: newMessage }, user.token)
-    setUpd(!upd)
+    // setUpd(!upd)
     
     let msgs = activeChat.messages
     msgs = msgs.concat({body: newMessage, user: user.id})
