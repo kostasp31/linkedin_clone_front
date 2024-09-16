@@ -582,7 +582,11 @@ const UserInfo = ({ogUser, ogData}) => {
   const [hobbies, setHobbies] = useState('')
   const [exp, setExp] = useState('')
   const [gender, setGender] = useState('')
+
   const [address, setAddress] = useState(null)
+  const [addressP, setAddressP] = useState(null)
+  const [showAddress, setShowAddress] = useState(null)
+
   const [number, setNumber] = useState(null)
   const [image, setImage] = useState('')
   const [pre, setPre] = useState('Your')
@@ -605,9 +609,16 @@ const UserInfo = ({ogUser, ogData}) => {
       else if (data.gender === 2)
         setGender('Female')
       setAddress(data.address)
+      setAddressP(data.public.addressP)
       setNumber(userInformation.phoneNumber)
       setImage(userInformation.pfp)
       setPre(`${userInformation.firstName} ${userInformation.lastName}'s`)
+
+      // console.log(data.network.includes(id))
+      if (ogUser.id === id || data.network.includes(ogUser.id))
+        setShowAddress(true)
+      else
+        setShowAddress(false)
     }
     fun()
   }, [])  // user.data ?
@@ -631,7 +642,7 @@ const UserInfo = ({ogUser, ogData}) => {
                 <h3>Name: {userInf.firstName} {userInf.lastName}</h3><img className='fpfPicture' src={image} />
                 <h3>Email: {userInf.email}</h3>
                 <h3>Phone number: {userInf.phoneNumber ? <div>{number}</div> : 'Not specified '}</h3>
-                <h3>Address: {address ? <div>{address} </div> : 'Not specified '}</h3>
+                <h3>Address: {address && showAddress? <div>{address} </div> : 'Not specified or privated info'}</h3>
                 <h3>Gender: {gender ? `${gender} ` : 'Not specified '}</h3>
               </div>
             </div>

@@ -37,6 +37,8 @@ const Personal = ({ user, setUser }) => {
   const [address, setAddress] = useState(null)
   const [editAddress, setEditAddress] = useState(false)
   const [newAddress, setNewAddress] = useState('')
+  const [addressP, setAddressP] = useState(false)
+  const [newAddressP, setNewAddressP] = useState(false)
 
   const [number, setNumber] = useState(null)
   const [editNumber, setEditNumber] = useState(false)
@@ -84,6 +86,8 @@ const Personal = ({ user, setUser }) => {
       setNumber(userInformation.phoneNumber)
 
       setImage(userInformation.pfp)
+
+      setAddressP(data.public.addressP)
     }
     fun()
   }, [])  // user.data ?
@@ -135,7 +139,8 @@ const Personal = ({ user, setUser }) => {
   } 
 
   const updateAddr = async () => {
-    const resp = await dataS.updateData(user.data.toString(), { address: newAddress }, user.token)
+    await dataS.updateData(user.data.toString(), { address: newAddress }, user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: false, experienceP: false, hobbiesP: false, addressP: newAddressP}} , user.token)
   }
   
   const updateNumber = async () => {
@@ -221,8 +226,8 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='numText' value={newNumber} onChange={(event) => setNewNumber(event.target.value)}/>
               </div>
-              <input type="checkbox" />  Private
-              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
+              {/* <input type="checkbox" />  Private
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button> */}
             </fieldset>
           </form>
           </div>
@@ -234,6 +239,7 @@ const Personal = ({ user, setUser }) => {
             event.preventDefault()
             setEditAddress(!editAddress)
             setAddress(newAddress)
+            setAddressP(newAddressP)
             updateAddr()
           }}>
             <fieldset>
@@ -241,7 +247,7 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='adressText' value={newAddress} onChange={(event) => setNewAddress(event.target.value)}/>
               </div>
-              <input type="checkbox" />  Private
+              <input type="checkbox" onClick={(event) => {setNewAddressP(event.target.checked)}} />  Public
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
@@ -283,7 +289,7 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='adressText' value={newPos} onChange={(event) => setNewPos(event.target.value)}/>
               </div>
-              <input type="checkbox" />  Private
+              <input type="checkbox" />  Public
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
@@ -303,7 +309,7 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='adressText' value={newWorks} onChange={(event) => setNewWorks(event.target.value)}/>
               </div>
-              <input type="checkbox" />  Private
+              <input type="checkbox" />  Public
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
@@ -342,7 +348,7 @@ const Personal = ({ user, setUser }) => {
             <button onClick={updateCV} style={textBoxStyle} className='savebtn' >Save changes</button>
             <div style={{float: 'right'}}>
               <div style={textBoxStyle}>
-                <input type="checkbox" />  This info is private
+                <input type="checkbox" />  This info is public
               </div>
             </div>
             <button className='cancelbtn' onClick={() => {
@@ -366,7 +372,7 @@ const Personal = ({ user, setUser }) => {
           <button onClick={updateExperience} style={textBoxStyleExp} className='savebtn' >Save changes</button>
           <div style={{float: 'right'}}>
             <div style={textBoxStyleExp}>
-              <input type="checkbox" />  This info is private
+              <input type="checkbox" />  This info is public
             </div>
           </div>
           <button className='cancelbtn' onClick={() => {
@@ -389,7 +395,7 @@ const Personal = ({ user, setUser }) => {
           <button onClick={updateHobbies} style={textBoxStyleHob} className='savebtn' >Save changes</button>
           <div style={{float: 'right'}}>
             <div style={textBoxStyleHob}>
-              <input type="checkbox" />  This info is private
+              <input type="checkbox" />  This info is public
             </div>
           </div>
           <button className='cancelbtn' onClick={() => {
