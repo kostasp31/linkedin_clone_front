@@ -169,7 +169,7 @@ const BlogInfo = ({user}) => {
           {
             blog.comments.length ?
             comments.map((cmt) =>
-              <Comment cmt={cmt} user={user}/>
+              <Comment cmt={cmt} user={user} key={cmt.id}/>
             )
               :
               'No comments'

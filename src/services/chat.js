@@ -26,7 +26,6 @@ const postChat = async (data, token) => {
 }
 
 const  updateChat = async (id, newData, token) => {
-  console.log(newData)
   const config = {
     headers: { Authorization: `Bearer ${token}` }
   }
@@ -39,4 +38,17 @@ const  updateChat = async (id, newData, token) => {
   }
 }
 
-export default { getChat, postChat, updateChat }
+const delChat = async (id, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  try {
+    const resp = await axios.delete(`${baseUrl}/${id}`, config)
+    return resp.data
+  }
+  catch(exception) {
+    console.log(exception)
+  }
+}
+
+export default { getChat, postChat, updateChat, delChat }

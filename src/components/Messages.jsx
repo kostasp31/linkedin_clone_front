@@ -69,9 +69,6 @@ const Messages = ({ user, setUser }) => {
         const actProp = location.state.active
         const ch = allChatsInfo.find(obj => obj.id === actProp)
 
-        console.log('ALL', allChatsInfo)
-        console.log('CH', ch)
-        console.log('ACT', actProp)
         if (!ch) {
           try {
             await userS.userInfo(actProp)
@@ -81,8 +78,9 @@ const Messages = ({ user, setUser }) => {
           }
         }
 
-        if (ch)
+        if (ch) {
           usrClick(ch)
+        }
       }
     }
     fun()
@@ -117,14 +115,21 @@ const Messages = ({ user, setUser }) => {
 
     let msgs = activeChat.messages
     msgs = msgs.concat({ body: newMessage, user: user.id })
-    // console.log(msgs)
 
     let newActive = activeChat
     newActive.messages = msgs
     setActiveChat(newActive)
-    // console.log(newActive)
 
     setNewMessage('')
+  }
+
+  const delCh = async() => {
+    await chatS.delChat(activeChat.id, user.token)
+    let allChatsInfoNew = allChatsInfo.slice()
+    allChatsInfoNew = allChatsInfoNew.filter((el) => el.id !== activeUser.id)
+    setChatsInfo(allChatsInfoNew)
+    setActiveChat(null)
+    setActiveUser(null)
   }
 
   return (
@@ -171,17 +176,18 @@ const Messages = ({ user, setUser }) => {
 
                     }
                   })
-                  : 'Loading'}
+                  : 'No Contacts'}
 
               </div>
             </div>
           </div>
 
           <div className="column_right_home" style={{ width: '100%' }}>
-            {activeChat && activeUser && myData ? (
+            {activeChat && activeUser && myData && activeChat ? (
               <div className='usrInfoInner' style={{ width: '100%', border: 'none' }}>
-                <div>
-                  <h2 style={{ textAlign: 'left' }}>{activeUser.firstName} {activeUser.lastName}</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h2>{activeUser.firstName} {activeUser.lastName}</h2>
+                  <button onClick={delCh} className='cancelbtn' style={{ height: 'auto', padding: '0.5em 1em' }}>Delete Chat</button>
                 </div>
               </div>
             ) : ''
@@ -216,7 +222,7 @@ const Messages = ({ user, setUser }) => {
                           <br />
                         </div>
                       ))}
-                      <div class="input-container">
+                      <div className="input-container">
                         <input
                           id="input-field"
                           value={newMessage}

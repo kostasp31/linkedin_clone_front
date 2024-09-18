@@ -280,11 +280,11 @@ const Personal = ({ user, setUser }) => {
               <legend>Select a gender:</legend>
               <div>
                 <input type='radio' id='femaleRadio' name='gen' value='Female' onChange={(event) => {setSelectedGender(event.target.value)}} />
-                <label for='femaleRadio'>Female</label>
+                <label htmlFor='femaleRadio'>Female</label>
               </div>
               <div>
                 <input type='radio' id='maleRadio' name='gen' value='Male' onChange={(event) => {setSelectedGender(event.target.value)}} />
-                <label for='maleRadio'>Male</label>
+                <label htmlFor='maleRadio'>Male</label>
               </div>
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>

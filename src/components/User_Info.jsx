@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import dataS from '../services/data'
 import userS from '../services/user'
+import chatS from '../services/chat'
 import {
   Link,
   useParams, useNavigate,
@@ -96,6 +97,29 @@ const UserInfo = ({ogUser, ogData}) => {
   //   navigate('/')
 
   const navigate = useNavigate()
+  const checkIfConvoExists = async () => {
+    if (usrData && userInf) {
+      const chatDataPromises = usrData.chats.map(async (chat) => {
+        const chatData = await chatS.getChat(chat)
+        return chatData
+      })
+      // array with all the chats of the user of the profile
+      const chatDataArray = await Promise.all(chatDataPromises)
+      
+      console.log(ogUser)
+      // check if chat already exists or create a new one
+      console.log('CHATS', chatDataArray) 
+      console.log('USRINFO', userInf)
+      // search for a chat with the ogUser and the user of the profile
+      if (chatDataArray.some(e => e.person1 === ogUser.id || e.person2 === ogUser.id))
+        navigate('/home/messages', { state: { active: userInf.id } })
+      else {
+        await chatS.postChat({person2: userInf.id}, ogUser.token)
+        navigate('/home/messages', { state: { active: userInf.id } })
+      }
+    }
+
+  }
 
   return (
     <>
@@ -115,6 +139,9 @@ const UserInfo = ({ogUser, ogData}) => {
                 <h3>Gender: {gender ? `${gender} ` : 'Not specified '}</h3>
                 <h3>Works in: {worksIn && showWorksIn? <div>{worksIn}</div>: 'Not specified or privated info'}</h3>
                 <h3>Position: {pos && showPos? <div>{pos}</div>: 'Not specified or privated info'}</h3>
+              </div>
+              <div style={{marginLeft: '50%', marginRight: '50%'}}>
+                <button className='savebtn' onClick={checkIfConvoExists}>Chat</button>
               </div>
             </div>
           </div>
@@ -153,4 +180,4 @@ const UserInfo = ({ogUser, ogData}) => {
   )
 }
 
-export default UserInfo
+export default UserInfo 
