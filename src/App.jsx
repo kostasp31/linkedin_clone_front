@@ -43,8 +43,10 @@ const App = () => {
       // noteService.setToken(user.token)
     }
     const fun = async () => {
-      const data = await dataS.userData(user.data.toString())
-      setUserData(data)
+      if (user) {
+        const data = await dataS.userData(user.data.toString())
+        setUserData(data)
+      }
     }
     fun()
   }, [])

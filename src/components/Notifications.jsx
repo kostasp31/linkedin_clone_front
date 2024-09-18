@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react'
-import loginS from '../services/login'
-import registerS from '../services/register'
 import dataS from '../services/data'
 import userS from '../services/user'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link,
-  useParams, useNavigate,
-  Navigate
+  Link,
+  useNavigate
 } from 'react-router-dom'
 
 const SentRequest = ({user, usrData, token, pr}) => {
@@ -119,7 +115,17 @@ const Notifications = ({ user, setUser }) => {
       setUserData(data)
     }
     fun()
-  },[])
+  },[usrData])
+
+  const clearNotifs = async() => {
+    if (usrData.notifications === null || usrData.notifications.length <= 0)
+      return
+    await dataS.deleteNotifications(usrData.id, user.token)
+    const newDt = usrData
+    newDt.notifications = []
+    console.log(newDt)
+    setUserData(newDt)
+  }
 
   return (
     <>
@@ -136,7 +142,7 @@ const Notifications = ({ user, setUser }) => {
       <div>
         {usrData && user ?
           <div>
-            <h1 style={{textAlign:'center'}}>MY NOTIFICATIONS</h1>
+            <h1 style={{textAlign:'center'}}>MY NOTIFICATIONS ({usrData.requestsReceived.length + usrData.notifications.length})</h1>
             <div className='container_home' style={{marginTop:'0'}}>
               <div className='column_left_home' style={{width:'70%', marginRight:'25px'}}>
                 <div className='usrInfoOuter'>
@@ -149,6 +155,22 @@ const Notifications = ({ user, setUser }) => {
                         )}
                       </ul>
                     : <div>You have no new network requests</div>
+                    }
+                  </div>
+                </div>
+                <div className='usrInfoOuter'>
+                  <div className='usrInfoInner' style={{width:'100%'}}>
+                    <h2 style={{textAlign:'center'}}>OTHER NOTIFICATIONS</h2>
+                    <button onClick={clearNotifs} className='cancelbtn' style={{float:'right', background:'#ffffff', padding: '5px'}}><img src='/trash.png' /></button>
+                    {usrData.notifications.length ?
+                      <div>
+                        {usrData.notifications.map((nt) =>
+                          <div>
+                            {nt}
+                          </div>
+                        )}
+                      </div>
+                    : <div>You have no more notifications</div>
                     }
                   </div>
                 </div>

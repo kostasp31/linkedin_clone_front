@@ -1,25 +1,50 @@
 import { useState, useEffect, useRef } from 'react'
 import dataS from '../services/data'
 import blogS from '../services/blog'
+import userS from '../services/user'
 import {
   Link, useNavigate
 } from 'react-router-dom'
-import Net_Home from './components/Net_Home'
+import Net_Home from './Net_Home'
+import isAuthenticated from '../services/authCheck'
+import axios from 'axios'
 
 const Blog_Home = ({ id, token, upd, setUpd }) => {
   const navigate = useNavigate()
   const [blog, setBlog] = useState(null)
+  const [auth, setAuth] = useState(null)
   useEffect(() => {
     const fun = async () => {
-      const blg = await blogS.blogInfo(id)
-      setBlog(blg)
+      try {
+        const blg = await blogS.blogInfo(id)
+        setBlog(blg)
+      }
+      catch (exception) {
+        console.log(exception)
+      }
+
+      if (blog) {
+        const author = await userS.userInfo(blog.author)
+        setAuth(author)
+      }
     }
     fun()
   }, [])  // user.data ?
 
-  if (blog) {
+  useEffect(() => {
+    const fun = async () => {
+      if (blog) {
+        const author = await userS.userInfo(blog.author)
+        setAuth(author)
+      }
+    }
+    fun()
+  }, [blog])
+  
+  if (blog && auth) {
     return (
-      <li>
+      <div key={blog.id.toString()}>
+        <h3>Author: {auth.firstName} {auth.lastName}</h3>
         <h4>{blog.title}, time: {new Date(blog.created).toLocaleDateString()} {new Date(blog.created).toLocaleTimeString()}</h4>
         <p>{blog.body}</p>
         <button className='savebtn' style={{ display: 'inline' }} onClick={() => { navigate(`/blogs/${id}`) }}>Visit</button>
@@ -27,21 +52,33 @@ const Blog_Home = ({ id, token, upd, setUpd }) => {
           setBlog('')
           blogS.deleteBlog(id, token)
         }
-        }>Delete</button>
-      </li>
+      }>Delete</button>
+      </div>
     )
   }
 }
 
-const Blog_Home1 = ({ blog}) => {
+const Blog_Home1 = ({ blog }) => {
+  const [auth, setAuth] = useState(null)
   const navigate = useNavigate()
-  if (blog) {
+  useEffect(() => {
+    const fun = async () => {
+      if (blog) {
+        const author = await userS.userInfo(blog.author)
+        setAuth(author)
+      }
+    }
+    fun()
+  }, [])
+
+  if (blog && auth) {
     return (
-      <li>
+      <div key={blog.id.toString()}>
+        <h3>Author: {auth.firstName} {auth.lastName}</h3>
         <h4>{blog.title}, time: {new Date(blog.created).toLocaleDateString()} {new Date(blog.created).toLocaleTimeString()}</h4>
         <p>{blog.body}</p>
         <button className='savebtn' style={{ display: 'inline' }} onClick={() => { navigate(`/blogs/${blog.id}`) }}>Visit</button>
-      </li>
+      </div>
     )
   }
 }
@@ -52,8 +89,15 @@ const Home = ({ user, setUser }) => {
   const [newTitle, setNewTitle] = useState('')
   const [netBlogs, setNetBlogs] = useState([])
   const navigate = useNavigate()
+  const logout = () => {
+    setUser(null)
+    window.localStorage.clear()
+    navigate('/')
+  }
+
   useEffect(() => {
     const fun = async () => {
+
       if (user.email === 'root@tree.org')
         navigate('/admin')
 
@@ -70,11 +114,6 @@ const Home = ({ user, setUser }) => {
   if (!user)
     navigate('/')
 
-  const logout = () => {
-    setUser(null)
-    window.localStorage.clear()
-    navigate('/')
-  }
 
   const uploadBlog = async (event) => {
     const req = {
@@ -84,6 +123,8 @@ const Home = ({ user, setUser }) => {
       body: newBlog,
       title: newTitle
     }
+    if (!newBlog || !newTitle)
+      return
     // console.log(newBlog)
     await blogS.postBlog(req, user.token)
     setNewBlog('')
@@ -105,6 +146,14 @@ const Home = ({ user, setUser }) => {
         <Link className='button' to="/home/settings">Settings</Link>
         <button className='button' style={{ float: 'right', backgroundColor: '#ff1a1a' }} onClick={logout} >Logout</button>
       </div>
+      {/* <div>
+      <form>
+        <input type="file" id="myFile" name="filename" />
+        <button onClick={async(event) => {
+          event.preventDefault()
+        }} type="submit">Submit image</button>
+      </form>
+      </div> */}
       <div>
 
         {usrData && user ?
@@ -124,13 +173,13 @@ const Home = ({ user, setUser }) => {
                   <hr />
                   {usrData.network.length ?
                     <div>
-                      <ul style={{paddingLeft: '0'}}>
+                      <div style={{paddingLeft: '0'}}>
                         {usrData.network.map((person) =>
                           <div className='forms' style={{width:'90%', textAlign:''}}>
-                            <Net_Home pr={person} key={person} />
+                            <Net_Home pr={person} key={person.toString()} />
                           </div>
                         )}
-                      </ul>
+                      </div>
                     </div>
                     :
                     <div>
@@ -152,13 +201,13 @@ const Home = ({ user, setUser }) => {
                     <hr />
                       {usrData.blogs.length ?
                         <div style={{whiteSpace: 'pre-line'}}>
-                          <ul>
+                          <div>
                             {usrData.blogs.sort((a, b) => new Date(b.created) - new Date(a.created)).map((blg) =>
-                              <ul>  
-                                <Blog_Home id={blg} key={blg} token={user.token} />
-                              </ul>
+                              <div>  
+                                <Blog_Home id={blg} key={blg.toString()} token={user.token} />
+                              </div>
                             )}
-                          </ul>
+                          </div>
                         </div>
                         :
                         <div>
@@ -170,13 +219,13 @@ const Home = ({ user, setUser }) => {
                   <hr />
                   {usrData.network.length ?
                     <div style={{whiteSpace: 'pre-line'}}>
-                      <ul>
+                      <div>
                         {netBlogs.sort((a, b) => new Date(b.created) - new Date(a.created)).map((blg) =>
-                          <ul>  
-                            <Blog_Home1 blog={blg} key={blg.id  } />
-                          </ul>
+                          <div>  
+                            <Blog_Home1 blog={blg} key={blg.id.toString()  } />
+                          </div>
                         )}
-                      </ul>
+                      </div>
                     </div>
                     :
                     <div>

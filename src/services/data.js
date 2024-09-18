@@ -59,5 +59,18 @@ const deleteDataNp = async (id, field, toBeRemovedId) => {
   } 
 }
 
+const deleteNotifications = async (id, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  try {
+    const resp = await axios.delete(`${baseUrl}/${id}/notifs`, config)
+    return resp.data
+  }
+  catch(exception) {
+    console.log(exception)
+  } 
+}
 
-export default { userData, updateData, updateDataNp, deleteData, deleteDataNp }
+
+export default { userData, updateData, updateDataNp, deleteData, deleteDataNp, deleteNotifications }

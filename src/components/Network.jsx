@@ -1,13 +1,8 @@
 import { useState, useEffect } from 'react'
-import loginS from '../services/login'
-import registerS from '../services/register'
 import dataS from '../services/data'
 import userS from '../services/user'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link,
-  useParams, useNavigate,
-  Navigate
+  Link, useNavigate
 } from 'react-router-dom'
 
 
@@ -38,7 +33,7 @@ const OneConnected = ({ user, usrData, pr }) => {
   
   const printWorks = () => {
     if (prData.works === null) {
-      return ('...')
+      return ('Not specified')
     } else {
       return (prData.works)
     }
@@ -46,7 +41,7 @@ const OneConnected = ({ user, usrData, pr }) => {
   
   const printPos = () => {
     if (prData.position === null) {
-      return ('...')
+      return ('Not specified')
     } else {
       return (prData.position)
     }
@@ -86,21 +81,28 @@ const SearchResult = ({ user, usrData, result }) => {
       
       const personData = await dataS.userData(person.userData.toString())
       setPrData(personData)
-      // console.log(prData)
-      // if (await usrData.requestsSent.includes(persn.id)){    // TODO: ACCEPT BUTTON NOT SHOWN WHEN:
-      //   setShowSend(false)                                   // PERSN ALREADY IN NETWORK/SENT/RECEIVED
-      // }    
-      // if(await usrData.requestsSent.includes(persn.id)){
-      //   setShowSend(false)
-      // }
-      // console.log(usrData.requestsSent)
+      // console.log(usrData.network.includes(result.id))
+      if (usrData.network.includes(result.id)){  
+        setShowSend(false)                                  
+      }
+      if(usrData.requestsSent.includes(result.id)){
+        setShowSend(false)
+      }
+      if(usrData.requestsReceived.includes(result.id)){
+        setShowSend(false)
+      }
     }
     fun()
   }, [])
 
+
   const sendHandler = async () => {
-    await dataS.updateData(usrData.id, {requestsSent: `${persn.id}`}, user.token)
-    await dataS.updateDataNp(prData.id, {requestsReceived: `${user.id}`})
+    if (prData){
+      await dataS.updateData(usrData.id, {requestsSent: `${persn.id}`}, user.token)
+      await dataS.updateDataNp(prData.id, {requestsReceived: `${user.id}`})
+      usrData.requestsSent = usrData.requestsSent.concat(persn.id)
+      setShowSend(false)
+    }
   }
 
   return (
@@ -114,12 +116,12 @@ const SearchResult = ({ user, usrData, result }) => {
         Visit Profile
       </button>
       {showSend ?
-      <button 
-        className='savebtn'
-        style={{background:'green', float:'right', paddingTop:'4px', paddingBottom:'4px', paddingLeft:'6px', paddingRight:'6px'}}
-        onClick={sendHandler}>
-        Send network request
-      </button>
+        <button 
+          className='savebtn'
+          style={{background:'green', float:'right', paddingTop:'4px', paddingBottom:'4px', paddingLeft:'6px', paddingRight:'6px'}}
+          onClick={sendHandler}>
+          Send network request
+        </button>
       : ''}
     </div>
   )
@@ -180,7 +182,7 @@ const Network = ({ user, setUser }) => {
                   </h2>
                   <ul>
                     {searchList.map((res) =>{
-                      if (res.fullName.toLowerCase().includes(newSearch.toLowerCase()) && newSearch)
+                      if (res.fullName.toLowerCase().includes(newSearch.toLowerCase()) && newSearch && res.id !== user.id)
                         return (<SearchResult user={user} usrData={usrData} result={res} key={res.id} />)
                       }
                     )}

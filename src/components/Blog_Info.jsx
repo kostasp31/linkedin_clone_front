@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import userS from '../services/user'
 import blogS from '../services/blog'
+import dataS from '../services/data'
 import commentS from '../services/comment'
 import {
   Link,
   useParams, useNavigate
 } from 'react-router-dom'
+import moment from 'moment'
 
 const Comment = ({cmt, user}) => {
   if (!cmt || ! user)
@@ -28,16 +30,15 @@ const Comment = ({cmt, user}) => {
   
   if (author && cmt) {
     return (
-      <div className='biotext' style={{background:'rgba(231, 215, 193, 0.7)'}}>
+      <div className='biotext' style={{background:'rgba(231, 215, 193, 0.7)', padding: '10px 10px', margin: '25px 50px', borderRadius:'10px'}}>
         <div>
           <h3>
-            By: {author.firstName} {author.lastName}, time: {new Date(cmt.created).toLocaleDateString()} {new Date(cmt.created).toLocaleTimeString()}
+            By: {author.firstName} {author.lastName}, {moment(cmt.created).fromNow()}
           </h3>
           <p style={{whiteSpace: 'pre-line'}}>{cmt.body}</p>
           <div>
             {user.id === author.id ? <button onClick={delComment} className='cancelbtn' style={{ marginLeft: '1%'}}>Delete</button> : ''}
           </div>
-          <hr />
         </div>
       </div>
     )
@@ -52,6 +53,10 @@ const BlogInfo = ({user}) => {
   const [showBox, setShowBox] = useState(false)
 
   const [upd, setUpd] = useState(false)
+
+  const [userDta, setUserDta] = useState(null)
+
+  const [disableLikes, setDisableLikes] = useState(false)
 
   const id = useParams().id
 
@@ -69,9 +74,15 @@ const BlogInfo = ({user}) => {
         }
         setComments(commentsArray)
       }
-      // commentsArray.sort((a, b) => new Date(b.created) - new Date(a.created))
-      // setComments([])
-      // setComments(prevComments => [...prevComments, ...commentsArray])
+
+      const userD = await dataS.userData(user.data.toString())
+      setUserDta(userD)
+
+      if (userD && blg && userD.interested.includes(blg.id.toString()))
+        setDisableLikes(true)
+      else 
+        setDisableLikes(false)
+        
     }
     fun()
   }, [upd])
@@ -84,10 +95,50 @@ const BlogInfo = ({user}) => {
       author: user.id,
       blog: blog.id
     }, user.token)
-    console.log(resp)
     setNewComment('')
     setUpd(!upd)
     setShowBox(false)
+    try {
+      const auth = await userS.userInfo(blog.author.toString())
+      if (auth)
+        await dataS.updateData(auth.userData.toString(), { notifications: `${user.firstName} ${user.lastName} made a comment on your Blog: ${blog.title}` }, user.token)
+    }
+    catch (error) {
+      console.error(error)
+    }
+    let newCom = comments
+    newCom.concat({
+      body: newComment,
+      author: user.id,
+      blog: blog.id
+    })
+    setComments(newCom)
+  }
+
+  const like = async () => {
+    if (user && blog && userDta) {
+      // console.log(userDta)
+      if (userDta.interested.includes(blog.id.toString())) {
+        console.log('You already liked that')
+        return
+      }
+      else {
+        blogS.likeBlog(id.toString(), blog.likes + 1, user.token)
+        console.log('Like!')
+        setDisableLikes(true)
+        // send a notification to the blog author that you liked their blog
+        try {
+          const auth = await userS.userInfo(blog.author.toString())
+          // console.log('auth', auth)
+          if (auth)
+            await dataS.updateData(auth.userData.toString(), { notifications: `${user.firstName} ${user.lastName} liked your Blog: ${blog.title}` }, user.token)
+        }
+        catch (error) {
+          console.error(error)
+        }
+
+      }
+    }
   }
 
   const navigate = useNavigate()
@@ -96,7 +147,7 @@ const BlogInfo = ({user}) => {
   {showBox ? boxStyle={ display: '' } : boxStyle={ display: 'none' } }
   {!showBox ? btnStyle={ display: '' } : btnStyle={ display: 'none' } }
 
-  if (blog) {
+  if (blog && userDta) {
     return (
       <>
         <header>
@@ -104,12 +155,16 @@ const BlogInfo = ({user}) => {
         </header>
         <h1 style={{textAlign:'center', marginTop:'0px',paddingTop:'80px',paddingBottom:'30px'}}>{blog.title}</h1>
         <div className=''>
-          <div className='bioText' style={{marginRight: '4%', marginLeft:'4%', width:'auto'}} >
+          <div className='bioText' style={{marginRight: '4%', marginLeft:'4%', width:'auto', paddingBottom:'40px'}} >
             <div style={{ whiteSpace: 'pre-line' }}>{blog.body}</div>
+            <div style={{float:'right', display:'flex'}}>
+              <h3 style={{margin: '0'}}>Likes: {blog.likes}</h3>
+              <button style={{padding: '0px 20px', marginLeft:'10px', height: '30px'}} disabled={disableLikes} className='savebtn' onClick={like}>Like</button>
+            </div>
           </div>
         </div>
 
-        <div style={{marginRight: '4%', marginLeft:'4%', width:'auto'}}>
+        <div className='bioText' style={{width:'auto', paddingLeft:'10px', paddingRight:'10px', margin:'30px 4%', paddingBottom: '50px'}}>
           <h2>Comments:</h2>
           {
             blog.comments.length ?
@@ -122,7 +177,7 @@ const BlogInfo = ({user}) => {
           {
             user ?
               <div style={{ whiteSpace: 'pre-line' }}>
-                <div>
+                <div style={{float:'right'}}>
                   <button  className='savebtn' style={btnStyle} onClick={() => setShowBox(!showBox)}>Comment</button>
                 </div>
                 <div style={boxStyle}>

@@ -4,7 +4,7 @@ import adS from '../services/ad'
 import {
   Link, useNavigate
 } from 'react-router-dom'
-import Net_Home from './components/Net_Home'
+import Net_Home from '../components/Net_Home'
 
 const Display_Ad = ({id, token}) => {
   const [adInfo, setAdInfo] = useState(null)

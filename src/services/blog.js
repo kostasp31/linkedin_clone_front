@@ -40,7 +40,6 @@ const deleteBlog = async (id, token) => {
 
 const getBlogsOfNet = async (id) => {
   try {
-    console.log(`${baseUrl}/network/${id}`)
     const resp = await axios.get(`${baseUrl}/network/${id}`)
     return resp.data
   }
@@ -49,4 +48,17 @@ const getBlogsOfNet = async (id) => {
   }
 }
 
-export default { blogInfo, postBlog, deleteBlog, getBlogsOfNet }
+const likeBlog = async (id, newVal, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  try {
+    const resp = await axios.put(`${baseUrl}/${id}`, {likes: newVal}, config)
+    return resp.data
+  }
+  catch(exception) {
+    console.log(exception)
+  }  
+}
+
+export default { blogInfo, postBlog, deleteBlog, getBlogsOfNet, likeBlog }

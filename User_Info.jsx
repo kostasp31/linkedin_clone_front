@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import dataS from '../services/data'
 import userS from '../services/user'
+import chatS from '../services/chat'
 import {
   Link,
   useParams, useNavigate,
@@ -9,30 +10,20 @@ import {
 const UserInfo = ({ogUser, ogData}) => {
   const [usrData, setUsrData] = useState(null)
   const [userInf, setUserInf] = useState(null)
-
   const [cv, setCv] = useState('')
-  const [showCv, setShowCv] = useState('')
-
   const [hobbies, setHobbies] = useState('')
-  const [showHobbies, setShowHobbies] = useState('')
-
   const [exp, setExp] = useState('')
-  const [showExp, setShowExp] = useState('')
-
   const [gender, setGender] = useState('')
 
-  const [worksIn, setWorksIn] = useState('')
-  const [showWorksIn, setShowWorksIn] = useState('')
-
-  const [pos, setPos] = useState('')
-  const [showPos, setShowPos] = useState('')
-
-  const [address, setAddress] = useState('')
-  const [showAddress, setShowAddress] = useState('')
+  const [address, setAddress] = useState(null)
+  const [addressP, setAddressP] = useState(null)
+  const [showAddress, setShowAddress] = useState(null)
 
   const [number, setNumber] = useState(null)
   const [image, setImage] = useState('')
   const [pre, setPre] = useState('Your')
+
+  const [chats, setChats] = useState([])
 
   const id = useParams().id
 
@@ -52,42 +43,16 @@ const UserInfo = ({ogUser, ogData}) => {
       else if (data.gender === 2)
         setGender('Female')
       setAddress(data.address)
+      setAddressP(data.public.addressP)
       setNumber(userInformation.phoneNumber)
       setImage(userInformation.pfp)
       setPre(`${userInformation.firstName} ${userInformation.lastName}'s`)
-      setPos(data.position)
-      setWorksIn(data.works)
 
-
-      if (data.network.includes(ogUser.id) || data.public.addressP)
+      // console.log(data.network.includes(id))
+      if (ogUser.id === id || data.network.includes(ogUser.id))
         setShowAddress(true)
       else
         setShowAddress(false)
-
-      if (data.network.includes(ogUser.id) || data.public.bioP)
-        setShowCv(true)
-      else
-        setShowCv(false)
-
-      if (data.network.includes(ogUser.id) || data.public.experienceP)
-        setShowExp(true)
-      else
-        setShowExp(false)
-
-      if (data.network.includes(ogUser.id) || data.public.hobbiesP)
-        setShowHobbies(true)
-      else
-        setShowHobbies(false)
-
-      if (data.network.includes(ogUser.id) || data.public.worksP)
-        setShowWorksIn(true)
-      else
-        setShowWorksIn(false)
-
-      if (data.network.includes(ogUser.id) || data.public.posP)
-        setShowPos(true)
-      else
-        setShowPos(false)
     }
     fun()
   }, [])  // user.data ?
@@ -97,6 +62,30 @@ const UserInfo = ({ogUser, ogData}) => {
 
   const navigate = useNavigate()
 
+  const checkIfConvoExists = async () => {
+    if (usrData && userInf) {
+      const chatDataPromises = ogData.chats.map(async (chat) => {
+        const chatData = await chatS.getChat(chat)
+        return chatData
+      })
+      const chatDataArray = await Promise.all(chatDataPromises)
+      setChats(chatDataArray)
+
+      console.log(ogUser)
+      // check if chat already exists or create a new one
+      console.log('CHATS', chatDataArray)
+      console.log('USRINFO', userInf)
+      if (chatDataArray.some(e => e.person1 === userInf.id || e.person2 === userInf.id))
+        navigate('/home/messages', { state: { active: userInf.id } })
+      else {
+        console.log('hdweuiq')
+        chatS.postChat({person2: userInf.id}, ogUser.token)
+        navigate('/home/messages', { state: { active: userInf.id } })
+      }
+    }
+
+  }
+ 
   return (
     <>
       <header>
@@ -113,8 +102,9 @@ const UserInfo = ({ogUser, ogData}) => {
                 <h3>Phone number: {userInf.phoneNumber ? <div>{number}</div> : 'Not specified '}</h3>
                 <h3>Address: {address && showAddress? <div>{address} </div> : 'Not specified or privated info'}</h3>
                 <h3>Gender: {gender ? `${gender} ` : 'Not specified '}</h3>
-                <h3>Works in: {worksIn && showWorksIn? <div>{worksIn}</div>: 'Not specified or privated info'}</h3>
-                <h3>Position: {pos && showPos? <div>{pos}</div>: 'Not specified or privated info'}</h3>
+              </div>
+              <div style={{marginLeft: '50%', marginRight: '50%'}}>
+                <button className='savebtn' onClick={checkIfConvoExists}>Chat</button>
               </div>
             </div>
           </div>
@@ -125,7 +115,7 @@ const UserInfo = ({ogUser, ogData}) => {
         <div className=''>
           <div className='bioText' >
             {usrData ?
-              <div style={{ whiteSpace: 'pre-line' }}>{cv && showCv ? <div>{cv} </div> : 'Not specified or privated info'}</div>
+              <div style={{ whiteSpace: 'pre-line' }}>{cv}</div>
               : ''
             }
           </div>
@@ -134,7 +124,7 @@ const UserInfo = ({ogUser, ogData}) => {
         <h2>{pre} Experience:</h2>
         <div className='bioText' >
           {usrData ?
-            <div style={{ whiteSpace: 'pre-line' }}>{exp && showExp ? <div>{exp} </div> : 'Not specified or privated info'}</div>
+            <div style={{ whiteSpace: 'pre-line' }}>{exp}</div>
             : ''
           }
         </div>
@@ -142,7 +132,7 @@ const UserInfo = ({ogUser, ogData}) => {
         <h2>{pre} Hobbies:</h2>
         <div className='bioText' >
           {usrData ?
-            <div style={{ whiteSpace: 'pre-line' }}>{hobbies && showHobbies? <div>{hobbies} </div> : 'Not specified or privated info'}</div>
+            <div style={{ whiteSpace: 'pre-line' }}>{hobbies}</div>
             : ''
           }
         </div>

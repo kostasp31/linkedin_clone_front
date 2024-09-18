@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react'
 import loginS from '../services/login'
-import registerS from '../services/register'
-import dataS from '../services/data'
 import userS from '../services/user'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link,
-  useParams, useNavigate,
-  Navigate
+  Link, useNavigate
 } from 'react-router-dom'
-import data from '../services/data'
 import Notification from './Notification'
 
 const Settings = ({ user, setUser, msg, setMsg, msg1, setMsg1 }) => {

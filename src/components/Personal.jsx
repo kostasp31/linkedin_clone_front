@@ -1,15 +1,9 @@
 import { useState, useEffect } from 'react'
-import loginS from '../services/login'
-import registerS from '../services/register'
 import dataS from '../services/data'
 import userS from '../services/user'
 import {
-  BrowserRouter as Router,
-  Routes, Route, Link,
-  useParams, useNavigate,
-  Navigate
+  Link, useNavigate
 } from 'react-router-dom'
-import data from '../services/data'
 
 const Personal = ({ user, setUser }) => {
   const [usrData, setUsrData] = useState(null)
@@ -19,16 +13,22 @@ const Personal = ({ user, setUser }) => {
   const [editedCv, setEditedCv] = useState('')
   const [edit, setEdit] = useState(false)
   const [editText, setEditText] = useState('Edit')
+  const [cvP, setCvP] = useState('')
+  const [newCvP, setNewCvP] = useState(false)
 
   const [hobbies, setHobbies] = useState('')
   const [editedHobbies, setEditedHobbies] = useState('')
   const [editHobbies, setEditHobbies] = useState(false)
   const [editTextHobbies, setEditTextHobbies] = useState('Edit')
+  const [hobbiesP, setHobbiesP] = useState('')
+  const [newHobbiesP, setNewHobbiesP] = useState(false)
 
   const [exp, setExp] = useState('')
   const [editedExp, setEditedExp] = useState('')
   const [editExp, setEditExp] = useState(false)
   const [editTextExp, setEditTextExp] = useState('Edit')
+  const [expP, setExpP] = useState('')
+  const [newExpP, setNewExpP] = useState(false)
 
   const [editGender, setEditGender] = useState(false)
   const [selectedGender, setSelectedGender] = useState('')
@@ -37,7 +37,7 @@ const Personal = ({ user, setUser }) => {
   const [address, setAddress] = useState(null)
   const [editAddress, setEditAddress] = useState(false)
   const [newAddress, setNewAddress] = useState('')
-  const [addressP, setAddressP] = useState(false)
+  const [addressP, setAddressP] = useState('')
   const [newAddressP, setNewAddressP] = useState(false)
 
   const [number, setNumber] = useState(null)
@@ -47,10 +47,14 @@ const Personal = ({ user, setUser }) => {
   const [pos, setPos] = useState(null)
   const [editPos, setEditPos] = useState(false)
   const [newPos, setNewPos] = useState('')
+  const [posP, setPosP] = useState('')
+  const [newPosP, setNewPosP] = useState(false)
 
   const [works, setWorks] = useState(null)
   const [editWorks, setEditWorks] = useState(false)
   const [newWorks, setNewWorks] = useState('')
+  const [worksP, setWorksP] = useState('')
+  const [newWorksP, setNewWorksP] = useState(false)
 
   const [image, setImage] = useState(null)
   const [newImage, setNewImage] = useState('')
@@ -62,16 +66,21 @@ const Personal = ({ user, setUser }) => {
 
       setCv(data.bio)
       setEditedCv(data.bio)
+      setCvP(data.public.bioP)
 
       setExp(data.experience)
       setEditedExp(data.experience)
+      setExpP(data.public.experienceP)
 
       setHobbies(data.hobbies)
       setEditedHobbies(data.hobbies)
+      setHobbiesP(data.public.hobbiesP)
 
       setPos(data.position)
+      setPosP(data.public.posP)
 
       setWorks(data.works)
+      setWorksP(data.public.worksP)
 
       if (data.gender === 1)
         setGender('Male')
@@ -79,6 +88,7 @@ const Personal = ({ user, setUser }) => {
         setGender('Female')
 
       setAddress(data.address)
+      setAddressP(data.public.addressP)
   
       const userInformation = await userS.userInfo(user.id.toString())
       setUserInf(userInformation)
@@ -87,7 +97,7 @@ const Personal = ({ user, setUser }) => {
 
       setImage(userInformation.pfp)
 
-      setAddressP(data.public.addressP)
+
     }
     fun()
   }, [])  // user.data ?
@@ -104,8 +114,9 @@ const Personal = ({ user, setUser }) => {
 
   const updateCV = async () => {
     // console.log(user.data)
-    const resp = await dataS.updateData(user.data.toString(), { bio: `${editedCv}` }, user.token)
-    // console.log(resp)
+    setCvP(newCvP)
+    await dataS.updateData(user.data.toString(), { bio: `${editedCv}` }, user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: newCvP, experienceP: expP, hobbiesP: hobbiesP, addressP: addressP, worksP: worksP, posP: posP}} , user.token)
     setEdit(!edit)
     setEditText('Edit')
     setCv(editedCv)
@@ -113,8 +124,9 @@ const Personal = ({ user, setUser }) => {
 
   const updateHobbies = async () => {
     // console.log(user.data)
-    const resp = await dataS.updateData(user.data.toString(), { hobbies: `${editedHobbies}` }, user.token)
-    // console.log(resp)
+    setHobbiesP(newHobbiesP)
+    await dataS.updateData(user.data.toString(), { hobbies: `${editedHobbies}` }, user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: cvP, experienceP: expP, hobbiesP: newHobbiesP, addressP: addressP, worksP: worksP, posP: posP}} , user.token)
     setEditHobbies(!editHobbies)
     setEditTextHobbies('Edit')
     setHobbies(editedHobbies)
@@ -122,8 +134,9 @@ const Personal = ({ user, setUser }) => {
 
   const updateExperience = async () => {
     // console.log(user.data)
-    const resp = await dataS.updateData(user.data.toString(), { experience: `${editedExp}` }, user.token)
-    // console.log(resp)
+    setExpP(newExpP)
+    await dataS.updateData(user.data.toString(), { experience: `${editedExp}` }, user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: cvP, experienceP: newExpP, hobbiesP: hobbiesP, addressP: addressP, worksP: worksP, posP: posP}} , user.token)
     setEditExp(!editExp)
     setEditTextExp('Edit')
     setExp(editedExp)
@@ -133,30 +146,33 @@ const Personal = ({ user, setUser }) => {
     if (!selectedGender)
       return
     // console.log(selectedGender)
-    const resp = await dataS.updateData(user.data.toString(), { gender: (selectedGender === 'Male' ? 1 : 2) }, user.token)
+    await dataS.updateData(user.data.toString(), { gender: (selectedGender === 'Male' ? 1 : 2) }, user.token)
     setEditGender(!editGender)
     setGender(selectedGender)
   } 
 
   const updateAddr = async () => {
+    // console.log('posP: ',posP)
     await dataS.updateData(user.data.toString(), { address: newAddress }, user.token)
-    await dataS.updateData(user.data.toString(), {public: {bioP: false, experienceP: false, hobbiesP: false, addressP: newAddressP}} , user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: newCvP, experienceP: expP, hobbiesP: hobbiesP, addressP: newAddressP, worksP: newWorksP, posP: posP}} , user.token)
   }
   
   const updateNumber = async () => {
-    const resp = await userS.updateUserInfo(user.id.toString(), { phoneNumber: newNumber }, user.token)
+    await userS.updateUserInfo(user.id.toString(), { phoneNumber: newNumber }, user.token)
   }
   
   const updatePos = async () => {
-    const resp = await dataS.updateData(user.data.toString(), { position: newPos }, user.token)
+    await dataS.updateData(user.data.toString(), { position: newPos }, user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: cvP, experienceP: expP, hobbiesP: hobbiesP, addressP: addressP, worksP: worksP, posP: newPosP}} , user.token)
   }
 
   const updateWorks = async () => {
-    const resp = await dataS.updateData(user.data.toString(), { works: newWorks }, user.token)
+    await dataS.updateData(user.data.toString(), { works: newWorks }, user.token)
+    await dataS.updateData(user.data.toString(), {public: {bioP: cvP, experienceP: expP, hobbiesP: hobbiesP, addressP: addressP, worksP: newWorksP, posP: posP}} , user.token)
   }
 
   const updateImage = async () => {
-    const resp = await userS.updateUserInfo(user.id.toString(), {pfp: newImage}, user.token)
+    await userS.updateUserInfo(user.id.toString(), {pfp: newImage}, user.token)
   }
 
   // console.log(newImage)
@@ -282,6 +298,7 @@ const Personal = ({ user, setUser }) => {
             event.preventDefault()
             setEditPos(!editPos)
             setPos(newPos)
+            setPosP(newPosP)
             updatePos()
           }}>
             <fieldset>
@@ -289,7 +306,7 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='adressText' value={newPos} onChange={(event) => setNewPos(event.target.value)}/>
               </div>
-              <input type="checkbox" />  Public
+              <input type="checkbox" onClick={(event) => {setNewPosP(event.target.checked)}} />  Public
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
@@ -302,6 +319,7 @@ const Personal = ({ user, setUser }) => {
             event.preventDefault()
             setEditWorks(!editWorks)
             setWorks(newWorks)
+            setWorksP(newWorksP)
             updateWorks()
           }}>
             <fieldset>
@@ -309,7 +327,7 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='adressText' value={newWorks} onChange={(event) => setNewWorks(event.target.value)}/>
               </div>
-              <input type="checkbox" />  Public
+              <input type="checkbox"  onClick={(event) => {setNewWorksP(event.target.checked)}} />  Public
               <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button>
             </fieldset>
           </form>
@@ -348,7 +366,7 @@ const Personal = ({ user, setUser }) => {
             <button onClick={updateCV} style={textBoxStyle} className='savebtn' >Save changes</button>
             <div style={{float: 'right'}}>
               <div style={textBoxStyle}>
-                <input type="checkbox" />  This info is public
+                <input type="checkbox" onClick={(event) => {setNewCvP(event.target.checked)}}/>  This info is public
               </div>
             </div>
             <button className='cancelbtn' onClick={() => {
@@ -372,7 +390,7 @@ const Personal = ({ user, setUser }) => {
           <button onClick={updateExperience} style={textBoxStyleExp} className='savebtn' >Save changes</button>
           <div style={{float: 'right'}}>
             <div style={textBoxStyleExp}>
-              <input type="checkbox" />  This info is public
+              <input type="checkbox" onClick={(event) => {setNewExpP(event.target.checked)}}/>  This info is public
             </div>
           </div>
           <button className='cancelbtn' onClick={() => {
@@ -395,7 +413,7 @@ const Personal = ({ user, setUser }) => {
           <button onClick={updateHobbies} style={textBoxStyleHob} className='savebtn' >Save changes</button>
           <div style={{float: 'right'}}>
             <div style={textBoxStyleHob}>
-              <input type="checkbox" />  This info is public
+              <input type="checkbox" onClick={(event) => {setNewHobbiesP(event.target.checked)}} />  This info is public
             </div>
           </div>
           <button className='cancelbtn' onClick={() => {
@@ -411,6 +429,3 @@ const Personal = ({ user, setUser }) => {
 }
 
 export default Personal
-
-
-          

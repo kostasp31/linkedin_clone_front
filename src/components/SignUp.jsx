@@ -2,7 +2,6 @@ import { useState } from 'react'
 import registerS from '../services/register'
 import Notification from './Notification'
 import {
-  BrowserRouter as Router,
   useNavigate
 } from 'react-router-dom'
 

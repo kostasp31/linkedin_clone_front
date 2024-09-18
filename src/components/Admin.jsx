@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
-import userS from './services/user'
+import userS from '../services/user'
 import {
   useNavigate
 } from 'react-router-dom'
 import { js2xml } from 'xml-js'
+import isAuthenticated from '../services/authCheck'
 
 const Admin_Page = ({user, setuser}) => {
   const navigate = useNavigate()
@@ -12,6 +13,11 @@ const Admin_Page = ({user, setuser}) => {
   const [selected, setSelected] = useState([])
   const [search, setSearch] = useState('')
 
+  const logout = () => {
+    setuser(null)
+    window.localStorage.clear()
+    navigate('/')
+  }
   // redirect to home if you are not the
   // root or not logged in ofc
   useEffect(() => {
@@ -120,12 +126,6 @@ const Admin_Page = ({user, setuser}) => {
     a.href = url
     a.download = 'users_data.xml'
     a.click()
-  }
-
-  const logout = () => {
-    setuser(null)
-    window.localStorage.clear()
-    navigate('/')
   }
 
   return (
