@@ -123,7 +123,7 @@ const Notifications = ({ user, setUser }) => {
     await dataS.deleteNotifications(usrData.id, user.token)
     const newDt = usrData
     newDt.notifications = []
-    console.log(newDt)
+    // console.log(newDt)
     setUserData(newDt)
   }
 
@@ -164,8 +164,8 @@ const Notifications = ({ user, setUser }) => {
                     <button onClick={clearNotifs} className='cancelbtn' style={{float:'right', background:'#ffffff', padding: '5px'}}><img src='/trash.png' /></button>
                     {usrData.notifications.length ?
                       <div>
-                        {usrData.notifications.map((nt) =>
-                          <div>
+                        {usrData.notifications.map((nt, index) =>
+                          <div key={index}>
                             {nt}
                           </div>
                         )}

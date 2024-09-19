@@ -202,7 +202,7 @@ const Home = ({ user, setUser }) => {
                       {usrData.blogs.length ?
                         <div style={{whiteSpace: 'pre-line'}}>
                             {usrData.blogs.sort((a, b) => new Date(b.created) - new Date(a.created)).map((blg) =>
-                              <div>  
+                              <div key={blg.toString()}>  
                                 <Blog_Home id={blg} key={blg.toString()} token={user.token} />
                               </div>
                             )}

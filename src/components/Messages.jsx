@@ -23,18 +23,16 @@ const Messages = ({ user, setUser }) => {
 
   const timerRef = useRef(null);
   const fun = async () => {
-    // console.log('updatedddddddddddddddddd')
     const data = await dataS.userData(user.data.toString())
     setUsrData(data)
-
 
     const chatDataPromises = data.chats.map(async (chat) => {
       const chatData = await chatS.getChat(chat)
       return chatData
     })
     const chatDataArray = await Promise.all(chatDataPromises)
-    setChats(chatDataArray)
-    // console.log(chatDataArray)
+    const chat1 = chatDataArray.slice()
+    setChats(chat1)
 
     const chatInfoPromises = chatDataArray.map(async (chat) => {
       let chatInfo
@@ -50,18 +48,27 @@ const Messages = ({ user, setUser }) => {
     const mydata = await userS.userInfo(user.id.toString())
     setMyData(mydata)
 
+    if (activeChat && allChats) {
+      const selectedChat = chat1.find(obj => obj.person1 === activeChat.person1 || obj.person2 === activeChat.person2)
+      setActiveChat(selectedChat)
+    }
+
   }
+
+  // fetch data every 1 sec
+  useEffect(() => {
+    timerRef.current = setInterval(() => {
+      fun()
+    }, 2000)
+    return () => {
+      clearInterval(timerRef.current)
+    }
+
+  }, [activeChat])
 
   useEffect(() => {
     fun()
-    // timerRef.current = setInterval(() => {
-    //   // console.log('This will run every 1 second!')
-    // }, 2000)
-    // return () => {
-    //   clearInterval(timerRef.current)
-    // }
-
-  }, [activeChat])
+  }, [])
 
   useEffect(() => {
     const fun  = async() => {
@@ -116,7 +123,7 @@ const Messages = ({ user, setUser }) => {
     let msgs = activeChat.messages
     msgs = msgs.concat({ body: newMessage, user: user.id })
 
-    let newActive = activeChat
+    let newActive = { ...activeChat }
     newActive.messages = msgs
     setActiveChat(newActive)
 
@@ -158,7 +165,7 @@ const Messages = ({ user, setUser }) => {
                   allChatsInfo.map((ch) => {
                     if (activeUser) {
                       return (
-                        <div style={{ marginBottom: '5px' }}>
+                        <div key={ch.id} style={{ marginBottom: '5px' }}>
                           <div className={activeUser.id === ch.id ? 'savebtn1' : 'savebtn'} style={{ textAlign: 'center' }} onClick={() => usrClick(ch)}>
                             {ch.firstName} {ch.lastName}
                           </div>
@@ -167,7 +174,7 @@ const Messages = ({ user, setUser }) => {
                     }
                     else {
                       return (
-                        <div style={{ marginBottom: '5px' }}>
+                        <div key={ch.id} style={{ marginBottom: '5px' }}>
                           <div className='savebtn' style={{ textAlign: 'center' }} onClick={() => usrClick(ch)}>
                             {ch.firstName} {ch.lastName}
                           </div>
@@ -197,8 +204,8 @@ const Messages = ({ user, setUser }) => {
                 {activeChat && activeUser && myData ? (
                   <div>
                     <div>
-                      {activeChat.messages.map((ms) => (
-                        <div className='message-container'>
+                      {activeChat.messages.map((ms, index) => (
+                        <div key={index} className='message-container'>
                           {ms.user !== user.id ?
                             <div>
                               <img src={activeUser.pfp} style={{ marginRight: '10px' }} className='msgImage' />

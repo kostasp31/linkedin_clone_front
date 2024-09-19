@@ -40,7 +40,6 @@ const postAd = async (data, token) => {
 
 const getAdsOfNet = async (id) => {
   try {
-    // console.log(`${baseUrl}/network/${id}`)
     const resp = await axios.get(`${baseUrl}/network/${id}`)
     return resp.data
   }
@@ -65,7 +64,6 @@ const setInterest = async (id, data, token) => {
 const getRandomAds = async (num) => {
   try {
     const resp = await axios.get(`${baseUrl}/random/${num}`)
-    // console.log('fefefe', resp.data)
     return resp.data
   }
   catch(exception) {

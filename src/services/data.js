@@ -13,7 +13,6 @@ const userData = async (id) => {
 }
 
 const  updateData = async (id, newData, token) => {
-  console.log(newData)
   const config = {
     headers: { Authorization: `Bearer ${token}` }
   }

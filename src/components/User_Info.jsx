@@ -106,10 +106,7 @@ const UserInfo = ({ogUser, ogData}) => {
       // array with all the chats of the user of the profile
       const chatDataArray = await Promise.all(chatDataPromises)
       
-      console.log(ogUser)
       // check if chat already exists or create a new one
-      console.log('CHATS', chatDataArray) 
-      console.log('USRINFO', userInf)
       // search for a chat with the ogUser and the user of the profile
       if (chatDataArray.some(e => e.person1 === ogUser.id || e.person2 === ogUser.id))
         navigate('/home/messages', { state: { active: userInf.id } })

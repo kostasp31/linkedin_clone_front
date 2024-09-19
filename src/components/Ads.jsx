@@ -34,7 +34,7 @@ const Display_Ad = ({id, token}) => {
         {
           adInfo.interested.length ?
             adInfo.interested.map((prsn) =>
-            <div>
+            <div key={prsn}>
               <Net_Home pr={prsn} key={prsn} />
             </div>)
           :
@@ -159,7 +159,7 @@ const Ads = ({ user, setUser }) => {
                         <div style={{whiteSpace: 'pre-line'}}>
                           <ul style={{paddingLeft: '0'}}>
                             {usrData.ads.map((ad) =>
-                              <div className='forms' style={{width:'auto', textAlign:'left'}}>  
+                              <div key={ad} className='forms' style={{width:'auto', textAlign:'left'}}>  
                                 <div><Display_Ad id={ad} key={ad} token={user.token}/></div>
                               </div>
                             )}
@@ -230,9 +230,9 @@ const Ads = ({ user, setUser }) => {
                                 return false
                               else
                                 return true
-                            }).map((ad) =>
-                              <ul style={{paddingLeft: '0'}}>  
-                                <div><Display_Ad_Net ad={ad} key={Math.floor(Math.random() * 10)} usrid={user.id} token={user.token} useid={false}/></div>
+                            }).map((ad, index) =>
+                              <ul style={{paddingLeft: '0'}} key={index}>  
+                                <div><Display_Ad_Net ad={ad} usrid={user.id} token={user.token} useid={false}/></div>
                               </ul>
                             )}
                           </div>
