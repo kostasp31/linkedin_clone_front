@@ -87,6 +87,8 @@ const Ads = ({ user, setUser }) => {
   const [submit, setSubmit] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
 
+  const [myAdsShown, setMyAdsShown] = useState(10)  // Ads currently shown under my ads
+
   const navigate = useNavigate()
   useEffect(() => {
     const fun = async () => {
@@ -96,7 +98,7 @@ const Ads = ({ user, setUser }) => {
       const netads = await adS.getAdsOfNet(data.id.toString())
       setNetAds(netads)
 
-      const rands = await adS.getRandomAds("10")
+      const rands = await adS.getRandomAds("10", user.token)
       setRandAds(rands)
 
       // console.log('HI')
@@ -158,7 +160,8 @@ const Ads = ({ user, setUser }) => {
                   {usrData.ads.length ?
                         <div style={{whiteSpace: 'pre-line'}}>
                           <ul style={{paddingLeft: '0'}}>
-                            {usrData.ads.map((ad) =>
+                            {usrData.ads.slice(0, myAdsShown).map((ad) =>
+                            // {usrData.ads.map((ad) =>
                               <div key={ad} className='forms' style={{width:'auto', textAlign:'left'}}>  
                                 <div><Display_Ad id={ad} key={ad} token={user.token}/></div>
                               </div>
@@ -175,6 +178,7 @@ const Ads = ({ user, setUser }) => {
                   <div style={{display:'flex', justifyContent: 'center'}}>
                      <div style={showCreatebutton}>
                         <button style={{float: '0 auto'}} className='savebtn' onClick={() => setCreateOpen(!createOpen)}>Create Ad</button>
+                        <button type='submit' className='savebtn' onClick={() => setMyAdsShown(myAdsShown+5)}>Load more</button>
                     </div>
                   </div>
 
@@ -226,7 +230,8 @@ const Ads = ({ user, setUser }) => {
                         randAds && netAds ?
                           <div>
                             {randAds.filter((ad0) => {
-                              if (ad0.author === user.id.toString() || netAds.some(n => n.author === ad0.author))
+                              // if (ad0.author === user.id.toString() || netAds.some(n => n.author === ad0.author))
+                              if (ad0.author === user.id.toString())
                                 return false
                               else
                                 return true

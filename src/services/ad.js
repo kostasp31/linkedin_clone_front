@@ -61,9 +61,12 @@ const setInterest = async (id, data, token) => {
   }  
 }
 
-const getRandomAds = async (num) => {
+const getRandomAds = async (num, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
   try {
-    const resp = await axios.get(`${baseUrl}/random/${num}`)
+    const resp = await axios.get(`${baseUrl}/random/${num}`, config)
     return resp.data
   }
   catch(exception) {
