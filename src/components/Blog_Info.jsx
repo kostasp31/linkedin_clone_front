@@ -10,7 +10,7 @@ import {
 import moment from 'moment'
 
 const Comment = ({cmt, user}) => {
-  if (!cmt || ! user)
+  if (!cmt || !user)
     return (<></>)
   const [author, setAuthor] = useState(null)
   useEffect(() => {
@@ -22,11 +22,11 @@ const Comment = ({cmt, user}) => {
   }, []) 
 
   const delComment = async () => {
+    console.log(cmt.id)
     const resp = await commentS.deleteComm(cmt.id, user.token)
     // console.log(resp)
     setAuthor('')
   }
-  
   
   if (author && cmt) {
     return (
@@ -58,6 +58,8 @@ const BlogInfo = ({user}) => {
 
   const [disableLikes, setDisableLikes] = useState(false)
 
+  const [likes, setLikes] = useState(0)
+
   const id = useParams().id
 
   useEffect(() => {
@@ -73,6 +75,7 @@ const BlogInfo = ({user}) => {
           commentsArray.push(com)
         }
         setComments(commentsArray)
+        setLikes(blg.likes)
       }
 
       const userD = await dataS.userData(user.data.toString())
@@ -107,11 +110,7 @@ const BlogInfo = ({user}) => {
       console.error(error)
     }
     let newCom = comments
-    newCom.concat({
-      body: newComment,
-      author: user.id,
-      blog: blog.id
-    })
+    newCom = newCom.concat(resp)
     setComments(newCom)
   }
 
@@ -132,6 +131,7 @@ const BlogInfo = ({user}) => {
           // console.log('auth', auth)
           if (auth)
             await dataS.updateData(auth.userData.toString(), { notifications: `${user.firstName} ${user.lastName} liked your Blog: ${blog.title}` }, user.token)
+          setLikes(likes+1)
         }
         catch (error) {
           console.error(error)
@@ -147,7 +147,7 @@ const BlogInfo = ({user}) => {
   {showBox ? boxStyle={ display: '' } : boxStyle={ display: 'none' } }
   {!showBox ? btnStyle={ display: '' } : btnStyle={ display: 'none' } }
 
-  if (blog && userDta) {
+  if (blog && userDta && likes !== undefined && comments) {
     return (
       <>
         <header>
@@ -158,7 +158,7 @@ const BlogInfo = ({user}) => {
           <div className='bioText' style={{marginRight: '4%', marginLeft:'4%', width:'auto', paddingBottom:'40px'}} >
             <div style={{ whiteSpace: 'pre-line' }}>{blog.body}</div>
             <div style={{float:'right', display:'flex'}}>
-              <h3 style={{margin: '0'}}>Likes: {blog.likes}</h3>
+              <h3 style={{margin: '0'}}>Likes: {likes}</h3>
               <button style={{padding: '0px 20px', marginLeft:'10px', height: '30px'}} disabled={disableLikes} className='savebtn' onClick={like}>Like</button>
             </div>
           </div>
@@ -168,8 +168,12 @@ const BlogInfo = ({user}) => {
           <h2>Comments:</h2>
           {
             blog.comments.length ?
-            comments.map((cmt) =>
-              <Comment cmt={cmt} user={user} key={cmt.id}/>
+            comments.map((cmt) => {
+              console.log(comments)
+              if (cmt) {
+                return <Comment cmt={cmt} user={user} key={cmt.id}/>
+              }
+            }
             )
               :
               'No comments'

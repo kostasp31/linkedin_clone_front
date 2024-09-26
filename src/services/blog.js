@@ -61,4 +61,17 @@ const likeBlog = async (id, newVal, token) => {
   }  
 }
 
-export default { blogInfo, postBlog, deleteBlog, getBlogsOfNet, likeBlog }
+const getRandomBlogs = async (num, token) => {
+  const config = {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+  try {
+    const resp = await axios.get(`${baseUrl}/random/${num}`, config)
+    return resp.data
+  }
+  catch(exception) {
+    console.log(exception)
+  }  
+}
+
+export default { blogInfo, postBlog, deleteBlog, getBlogsOfNet, likeBlog, getRandomBlogs }

@@ -88,6 +88,7 @@ const Home = ({ user, setUser }) => {
   const [newBlog, setNewBlog] = useState('')
   const [newTitle, setNewTitle] = useState('')
   const [netBlogs, setNetBlogs] = useState([])
+  const [randBlogs, setRandBlogs] = useState(null)
   const navigate = useNavigate()
   const logout = () => {
     setUser(null)
@@ -107,6 +108,9 @@ const Home = ({ user, setUser }) => {
       const blogs = await blogS.getBlogsOfNet(data.id.toString())
       // console.log(blogs)
       setNetBlogs(blogs)
+
+      const rands = await blogS.getRandomBlogs("10", user.token)
+      setRandBlogs(rands)
     }
     fun()
   }, [newBlog])  // user.data ?
@@ -234,7 +238,29 @@ const Home = ({ user, setUser }) => {
 
                   <h2 style={{ textAlign: 'center' }}>Other articles:</h2>
                   <hr />
-
+                    {
+                      randBlogs && randBlogs.length ?//&& netAds ?
+                        <div>
+                          {randBlogs.filter((blg0) => {
+                            // if (ad0.author === user.id.toString() || netAds.some(n => n.author === ad0.author))
+                            if (!blg0)
+                              return
+                            if (blg0.author === user.id.toString())
+                              return false
+                            else
+                              return true
+                          }).map((blg, index) =>
+                            <div>  
+                              <Blog_Home1 blog={blg} key={blg.id.toString()  } />
+                            </div>
+                          )}
+                        </div>
+                      
+                      :
+                        <div>
+                          No more Blogs
+                        </div>
+                    }
                   <h2 style={{ textAlign: 'center' }}>Submit new:</h2>
                   <hr />
                   <div>
