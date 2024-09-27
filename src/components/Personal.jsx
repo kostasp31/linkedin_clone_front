@@ -34,29 +34,29 @@ const Personal = ({ user, setUser }) => {
   const [selectedGender, setSelectedGender] = useState('')
   const [gender, setGender] = useState('')
 
-  const [address, setAddress] = useState(null)
+  const [address, setAddress] = useState('')
   const [editAddress, setEditAddress] = useState(false)
   const [newAddress, setNewAddress] = useState('')
   const [addressP, setAddressP] = useState('')
   const [newAddressP, setNewAddressP] = useState(false)
 
-  const [number, setNumber] = useState(null)
+  const [number, setNumber] = useState('')
   const [editNumber, setEditNumber] = useState(false)
   const [newNumber, setNewNumber] = useState('')
 
-  const [pos, setPos] = useState(null)
+  const [pos, setPos] = useState('')
   const [editPos, setEditPos] = useState(false)
   const [newPos, setNewPos] = useState('')
   const [posP, setPosP] = useState('')
   const [newPosP, setNewPosP] = useState(false)
 
-  const [works, setWorks] = useState(null)
+  const [works, setWorks] = useState('')
   const [editWorks, setEditWorks] = useState(false)
   const [newWorks, setNewWorks] = useState('')
   const [worksP, setWorksP] = useState('')
   const [newWorksP, setNewWorksP] = useState(false)
 
-  const [image, setImage] = useState(null)
+  const [image, setImage] = useState('')
   const [newImage, setNewImage] = useState('')
 
   useEffect(() => {
@@ -242,8 +242,8 @@ const Personal = ({ user, setUser }) => {
               <div>
                 <input type='text' id='numText' value={newNumber} onChange={(event) => setNewNumber(event.target.value)}/>
               </div>
-              {/* <input type="checkbox" />  Private
-              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button> */}
+              {/* <input type="checkbox" />  Private*/}
+              <button type='submit' className='buttonChange' style={{float: 'right', background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}}>Submit</button> 
             </fieldset>
           </form>
           </div>

@@ -192,7 +192,10 @@ const Notifications = ({ user, setUser }) => {
               </div>
             </div>
           </div>
-        : 'ERROR'}
+        : 
+        <div className='loading_image'>
+          <img src="https://localhost:3003/images/loading_256.gif" />
+        </div>}
       </div>
     </>
   )

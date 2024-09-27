@@ -41,6 +41,7 @@ const App = () => {
       const user = JSON.parse(loggedInUser)
       setUser(user)
       // noteService.setToken(user.token)
+      navigate('/home')
     }
     const fun = async () => {
       if (user) {
@@ -98,8 +99,8 @@ const App = () => {
         <Route path="/home/personal_info" element={user ? <Personal user={user} setUser={setUser} /> : <Navigate replace to="/login" />} />
         <Route path="/home/settings" element={user ? <Settings user={user} setUser={setUser} msg={errorMessage} setMsg={setErrorMessage} msg1={errorMessage1} setMsg1={setErrorMessage1} /> : <Navigate replace to="/login" />} />
         <Route path="/profile/:id" element={<UserInfo ogUser={user} ogData={usrData} />} />
-        <Route path="/blogs/:id" element={<BlogInfo user={user}/>} />
-        <Route path="/admin" element={<Admin_Page user={user} setuser={setUser}/>} />
+        <Route path="/blogs/:id" element={<BlogInfo user={user} />} />
+        <Route path="/admin" element={<Admin_Page user={user} setuser={setUser} />} />
       </Routes>
       {/* <Footer /> */}
     </div>

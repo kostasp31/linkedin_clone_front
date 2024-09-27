@@ -49,8 +49,11 @@ const Messages = ({ user, setUser }) => {
     setMyData(mydata)
 
     if (activeChat && allChats) {
-      const selectedChat = chat1.find(obj => obj.person1 === activeChat.person1 || obj.person2 === activeChat.person2)
-      setActiveChat(selectedChat)
+      // setActiveChat(activeChat)
+      // console.log('111111111111', activeChat)
+      // const selectedChat = chat1.find(obj => obj.person1 === activeUser.id || obj.person2 === activeUser.id)
+      // setActiveChat(selectedChat)
+      // console.log('222222222222', activeChat)
     }
 
   }
@@ -64,7 +67,7 @@ const Messages = ({ user, setUser }) => {
       clearInterval(timerRef.current)
     }
 
-  }, [activeChat])
+  }, [])
 
   useEffect(() => {
     fun()
@@ -91,7 +94,7 @@ const Messages = ({ user, setUser }) => {
       }
     }
     fun()
-  }, [allChatsInfo])
+  }, [])
 
 
   const logout = () => {
@@ -104,6 +107,7 @@ const Messages = ({ user, setUser }) => {
     location.state = null
     const selectedChat = allChats.find(obj => obj.person1 === ch.id || obj.person2 === ch.id)
     setActiveChat(selectedChat)
+
     // console.log('selchat', selectedChat)
     // console.log('all', allChatsInfo)
 

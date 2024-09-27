@@ -87,7 +87,7 @@ const Ads = ({ user, setUser }) => {
   const [submit, setSubmit] = useState(false)
   const [createOpen, setCreateOpen] = useState(false)
 
-  const [myAdsShown, setMyAdsShown] = useState(10)  // Ads currently shown under my ads
+  const [myAdsShown, setMyAdsShown] = useState(5)  // Ads currently shown under my ads
 
   const navigate = useNavigate()
   useEffect(() => {
@@ -210,9 +210,9 @@ const Ads = ({ user, setUser }) => {
                       {
                         netAds ?
                           <div>
-                            {netAds.map((ad) =>
-                              <ul style={{paddingLeft: '0'}}>  
-                                <div><Display_Ad_Net ad={ad} key={Math.floor(Math.random() * 10)} usrid={user.id} token={user.token} useid={true}/></div>
+                            {netAds.map((ad, index) =>
+                              <ul style={{paddingLeft: '0'}} key={index}>  
+                                <div><Display_Ad_Net ad={ad} key={index} usrid={user.id} token={user.token} useid={true}/></div>
                               </ul>
                             )}
                           </div>

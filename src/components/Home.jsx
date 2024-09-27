@@ -179,7 +179,7 @@ const Home = ({ user, setUser }) => {
                     <div>
                       <div style={{paddingLeft: '0'}}>
                         {usrData.network.map((person) =>
-                          <div className='forms' style={{width:'90%', textAlign:''}}>
+                          <div className='forms' style={{width:'90%', textAlign:''}} key={person.toString()}>
                             <Net_Home pr={person} key={person.toString()} />
                           </div>
                         )}
@@ -219,11 +219,11 @@ const Home = ({ user, setUser }) => {
 
                   <h2 style={{ textAlign: 'center' }}>Network articles:</h2>
                   <hr />
-                  {usrData.network.length ?
+                  {netBlogs.length ?
                     <div style={{whiteSpace: 'pre-line'}}>
                       <div>
                         {netBlogs.sort((a, b) => new Date(b.created) - new Date(a.created)).map((blg) =>
-                          <div>  
+                          <div key={blg.id.toString()}>  
                             <Blog_Home1 blog={blg} key={blg.id.toString()  } />
                           </div>
                         )}
@@ -250,7 +250,7 @@ const Home = ({ user, setUser }) => {
                             else
                               return true
                           }).map((blg, index) =>
-                            <div>  
+                            <div key={index``}>  
                               <Blog_Home1 blog={blg} key={blg.id.toString()  } />
                             </div>
                           )}

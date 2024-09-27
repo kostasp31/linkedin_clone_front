@@ -364,3 +364,10 @@ ul {
   height: 35px;
   text-align: center;
 }
+
+.loading_image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}

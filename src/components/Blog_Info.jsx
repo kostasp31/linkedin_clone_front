@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom'
 import moment from 'moment'
 
-const Comment = ({cmt, user}) => {
+const Comment = ({cmt, user, comments, setComments}) => {
   if (!cmt || !user)
     return (<></>)
   const [author, setAuthor] = useState(null)
@@ -22,10 +22,11 @@ const Comment = ({cmt, user}) => {
   }, []) 
 
   const delComment = async () => {
-    console.log(cmt.id)
     const resp = await commentS.deleteComm(cmt.id, user.token)
     // console.log(resp)
     setAuthor('')
+    const newComments = comments.filter((c) => c.id !== cmt.id)
+    setComments(newComments)
   }
   
   if (author && cmt) {
@@ -116,19 +117,15 @@ const BlogInfo = ({user}) => {
 
   const like = async () => {
     if (user && blog && userDta) {
-      // console.log(userDta)
       if (userDta.interested.includes(blog.id.toString())) {
-        console.log('You already liked that')
         return
       }
       else {
         blogS.likeBlog(id.toString(), blog.likes + 1, user.token)
-        console.log('Like!')
         setDisableLikes(true)
         // send a notification to the blog author that you liked their blog
         try {
           const auth = await userS.userInfo(blog.author.toString())
-          // console.log('auth', auth)
           if (auth)
             await dataS.updateData(auth.userData.toString(), { notifications: `${user.firstName} ${user.lastName} liked your Blog: ${blog.title}` }, user.token)
           setLikes(likes+1)
@@ -169,9 +166,8 @@ const BlogInfo = ({user}) => {
           {
             blog.comments.length ?
             comments.map((cmt) => {
-              console.log(comments)
               if (cmt) {
-                return <Comment cmt={cmt} user={user} key={cmt.id}/>
+                return <Comment cmt={cmt} user={user} key={cmt.id} comments={comments} setComments={setComments}/>
               }
             }
             )
