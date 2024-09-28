@@ -145,7 +145,7 @@ const SignUp = ({ setErrorMessage, msg }) => {
               </div>
               <br />
               <Notification message={msg} />
-              <p>Already have an account? <a href='/login'>Login</a></p>
+              <p>Already have an account? <u><a style={{color:'blue', cursor:'pointer'}} onClick={() => navigate('/login')}>Login</a></u></p>
             </form>
           </div>
 

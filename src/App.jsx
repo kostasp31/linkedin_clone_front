@@ -41,7 +41,7 @@ const App = () => {
       const user = JSON.parse(loggedInUser)
       setUser(user)
       // noteService.setToken(user.token)
-      navigate('/home')
+      navigate('/')
     }
     const fun = async () => {
       if (user) {
@@ -68,7 +68,7 @@ const App = () => {
       if (email === 'root@tree.org')
         navigate('/admin')
       else
-        navigate('/home')
+        navigate('/')
 
     } catch (exception) {
       setErrorMessage(exception.response.data.error)

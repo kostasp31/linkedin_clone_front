@@ -59,6 +59,8 @@ const Personal = ({ user, setUser }) => {
   const [image, setImage] = useState('')
   const [newImage, setNewImage] = useState('')
 
+  const [selectedPfp, setSelectedPfp] = useState(null)
+
   useEffect(() => {
     const fun = async () => {
       const data = await dataS.userData(user.data.toString())
@@ -171,8 +173,8 @@ const Personal = ({ user, setUser }) => {
     await dataS.updateData(user.data.toString(), {public: {bioP: cvP, experienceP: expP, hobbiesP: hobbiesP, addressP: addressP, worksP: newWorksP, posP: posP}} , user.token)
   }
 
-  const updateImage = async () => {
-    await userS.updateUserInfo(user.id.toString(), {pfp: newImage}, user.token)
+  const updateImage = async (path) => {
+    await userS.updateUserInfo(user.id.toString(), {pfp: path}, user.token)
   }
 
   // console.log(newImage)
@@ -224,7 +226,7 @@ const Personal = ({ user, setUser }) => {
         <div className='usrInfoInner'>
           <div style={{marginLeft:'8%'}}>
           <h2 style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>Your info:</h2>
-          <h3>Name: {user.firstName} {user.lastName}</h3><img className='fpfPicture' src={image} />
+          <h3>Name: {user.firstName} {user.lastName}</h3><img style={{borderRadius: '5px'}} className='fpfPicture' src={image} />
           <h3>Email: {user.email}</h3>
           <h3>Phone number: {userInf.phoneNumber ? <div style={{display: 'inline-block'}}>{number}</div> : 'Not specified '}<button className='buttonChange' onClick={() => setEditNumber(!editNumber)}> Change</button></h3>
 
@@ -334,21 +336,47 @@ const Personal = ({ user, setUser }) => {
           </div>
 
           <div>
-            Paste here an image link <br />for your profile picture:
+            Upload your profile picture: <br />
+            (Use .png .jpg or .gif files)
           </div>
-          <input accept="image/*" style={{border: '1px solid', }} onChange={(event) => setNewImage(event.target.value)} />
+          {/* <input accept="image/*" style={{border: '1px solid', }} onChange={(event) => setNewImage(event.target.value)} />
           <button className='buttonChange' style={{ background: 'linear-gradient(180deg, #4B91F7 0%, #da42a0 100%)'}} onClick={(event) => {
             event.preventDefault()
             setImage(newImage)
             updateImage()
           }}>
           Submit image
-          </button>
+          </button> */}
+          <form onSubmit={async(event) => {
+            event.preventDefault()
+            if (selectedPfp === null) {
+              alert('Please choose an image first')
+              return
+            }
+            const resp = await userS.submitProfile(selectedPfp, user.token)
+            setImage(resp.path)
+            console.log('RESP>PATH', resp.path)
+            await updateImage(resp.path)
+            }}
+          >
+
+            <input type="file" onChange={(event) => {
+              const fileName = event.target.files[0].name
+              let extension3 = fileName.slice(-3)
+              let extension4 = fileName.slice(-4)
+              if (extension3 === 'jpg' || extension3 === 'png' || extension3 === 'gif' || extension4 === 'jpeg')
+                setSelectedPfp(event.target.files[0])
+              else
+                alert('Invalid format')
+              }}
+            />
+            <input className='buttonChange' type="submit" value="Upload File" style={{  display: 'flex', flexDirection: 'column'}} />
+          </form>
 
         </div>
         </div>
         </div>
-        : ''}
+        : <div className='loading_image'><img src='/loading_256.gif' /></div>}
 
         <div style={{width: '90%', margin: '0 auto'}}>
         <h2>Your CV:</h2>
@@ -356,7 +384,7 @@ const Personal = ({ user, setUser }) => {
             <div style={bioBoxStyle} className='bioText' >
               {usrData ? 
                 <div style={{whiteSpace: 'pre-line'}}>{cv}</div>
-                : ''
+                : <div className='loading_image' style={{width: '20%'}}><img src='/loading_256.gif' /></div>
               }
             </div>
             <div style={textBoxStyle}>
@@ -380,7 +408,7 @@ const Personal = ({ user, setUser }) => {
           <div style={expBoxStyle} className='bioText' >
             {usrData ? 
               <div style={{whiteSpace: 'pre-line'}}>{exp}</div>
-              : ''
+              : <div className='loading_image' style={{width: '20%'}}><img src='/loading_256.gif' /></div>
             }
           </div>
           <div style={textBoxStyleExp}>
@@ -403,7 +431,7 @@ const Personal = ({ user, setUser }) => {
           <div style={hobBoxStyle} className='bioText' >
             {usrData ? 
               <div style={{whiteSpace: 'pre-line'}}>{hobbies}</div>
-              : ''
+              : <div className='loading_image' style={{width: '20%'}}><img src='/loading_256.gif' /></div>
             }
           </div>
           <div style={textBoxStyleHob}>

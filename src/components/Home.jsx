@@ -8,6 +8,7 @@ import {
 import Net_Home from './Net_Home'
 import isAuthenticated from '../services/authCheck'
 import axios from 'axios'
+import moment from 'moment'
 
 const Blog_Home = ({ id, token, upd, setUpd }) => {
   const navigate = useNavigate()
@@ -44,9 +45,9 @@ const Blog_Home = ({ id, token, upd, setUpd }) => {
   if (blog && auth) {
     return (
       <div key={blog.id.toString()}>
-        <h3>Author: {auth.firstName} {auth.lastName}</h3>
-        <h4>{blog.title}, time: {new Date(blog.created).toLocaleDateString()} {new Date(blog.created).toLocaleTimeString()}</h4>
-        <p>{blog.body}</p>
+        <h3>{blog.title}, posted: {moment(blog.created).fromNow()}</h3>
+        <h4>Author: {auth.firstName} {auth.lastName}</h4>
+        {/* <p>{blog.body}</p> */}
         <button className='savebtn' style={{ display: 'inline' }} onClick={() => { navigate(`/blogs/${id}`) }}>Visit</button>
         <button className='cancelbtn' onClick={() => {
           setBlog('')
@@ -74,9 +75,9 @@ const Blog_Home1 = ({ blog }) => {
   if (blog && auth) {
     return (
       <div key={blog.id.toString()}>
-        <h3>Author: {auth.firstName} {auth.lastName}</h3>
-        <h4>{blog.title}, time: {new Date(blog.created).toLocaleDateString()} {new Date(blog.created).toLocaleTimeString()}</h4>
-        <p>{blog.body}</p>
+        <h3>{blog.title}, posted: {moment(blog.created).fromNow()}</h3>
+        <h4>Author: {auth.firstName} {auth.lastName}</h4>
+        {/* <p>{blog.body}</p> */}
         <button className='savebtn' style={{ display: 'inline' }} onClick={() => { navigate(`/blogs/${blog.id}`) }}>Visit</button>
       </div>
     )
@@ -89,6 +90,9 @@ const Home = ({ user, setUser }) => {
   const [newTitle, setNewTitle] = useState('')
   const [netBlogs, setNetBlogs] = useState([])
   const [randBlogs, setRandBlogs] = useState(null)
+  const [popupStyle, setPopupStyle] = useState({display: 'none'})
+  const [selectedMedia, setSelectedMedia] = useState(null)
+  const [mediaType, setMediaType] = useState(null)
   const navigate = useNavigate()
   const logout = () => {
     setUser(null)
@@ -137,6 +141,53 @@ const Home = ({ user, setUser }) => {
 
   // if (usrData)
   //   console.log('====>', usrData.blogs)
+  const fileSelect = (event) => {
+    const fileName = event.target.files[0].name
+    let extension3 = fileName.slice(-3)
+    let extension4 = fileName.slice(-4)
+    if (extension3 === 'jpg' || extension3 === 'png' || extension3 === 'gif' || extension4 === 'jpeg') {
+      setSelectedMedia(event.target.files[0])
+      setMediaType('img')
+    }
+    else if(extension3 === 'mp4' || extension4 === 'webm') { 
+      setSelectedMedia(event.target.files[0])
+      setMediaType('vid')
+    }
+    else if(extension3 === 'mp3' || extension3 === 'wav' || extension3 === 'ogg') { 
+      setSelectedMedia(event.target.files[0])
+      setMediaType('aud')
+    }
+    else
+      alert('Unsupported format')
+  }
+
+  const uploadMedia = async(event) => {
+    event.preventDefault()
+
+    if (selectedMedia === null) {
+      alert('Please choose some media first')
+      return
+    }
+    const resp = await userS.submitMedia(selectedMedia, user.token)
+    setPopupStyle({display: 'none'})
+
+    let blogWithMedia = newBlog
+
+    if (mediaType === 'img') {
+      blogWithMedia = blogWithMedia.concat(`\n\n@!img<${resp.path}>\n\n`)
+      console.log(blogWithMedia)
+    }
+    else if (mediaType === 'vid') {
+      blogWithMedia = blogWithMedia.concat(`\n\n@!vid<${resp.path}>\n\n`)
+      console.log(blogWithMedia)
+    }
+    else if (mediaType === 'aud') {
+      blogWithMedia = blogWithMedia.concat(`\n\n@!aud<${resp.path}>\n\n`)
+      console.log(blogWithMedia)
+    }
+
+    setNewBlog(blogWithMedia)
+  }
 
   return (
     <>
@@ -158,6 +209,22 @@ const Home = ({ user, setUser }) => {
         }} type="submit">Submit image</button>
       </form>
       </div> */}
+      <div className="modal" style={popupStyle}>
+        <div className="modal-content">
+          <span style={{float : 'right', fontWeight: 'bold', fontSize: '30px', cursor: 'pointer'}} onClick={() => {setPopupStyle({display: 'none'})}}>&times;</span>
+          <form onSubmit={uploadMedia}>
+            <input type="file" onChange={fileSelect} />
+            <input className='buttonChange' type="submit" value="Upload File" style={{  display: 'flex', flexDirection: 'column'}} />
+            <p>
+              Supported formats:<br />
+              Images: .jpg, .png, .gif <br />
+              Videos: .mp4, .webm<br />
+              Audio: .mp3, .wav, .ogg <br />
+            </p> 
+          </form>
+        </div>
+      </div>
+
       <div>
 
         {usrData && user ?
@@ -250,7 +317,7 @@ const Home = ({ user, setUser }) => {
                             else
                               return true
                           }).map((blg, index) =>
-                            <div key={index``}>  
+                            <div key={index}>  
                               <Blog_Home1 blog={blg} key={blg.id.toString()  } />
                             </div>
                           )}
@@ -267,16 +334,22 @@ const Home = ({ user, setUser }) => {
                     <input style={{width: '100%', opacity: '0.7'}} placeholder='Title' value={newTitle} onChange={(event) => setNewTitle(event.target.value)} />
                     <textarea placeholder='Body' name="Text1" cols="40" rows="5" value={newBlog} onChange={(event) => setNewBlog(event.target.value)} ></textarea>
                     <br />
-                    <button type='submit' className='savebtn' onClick={uploadBlog}  >Create Blog</button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <button type='submit' className='savebtn' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={uploadBlog}>
+                        Create Blog <img style={{ marginLeft: '10px' }} src={"/create_icon.png"} />
+                      </button>
+                      <button className='savebtn' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={() => setPopupStyle({ display: 'block' })}>
+                        Add Media<img style={{ marginLeft: '10px' }} src={"/upload_icon.png"} />
+                      </button>
+                    </div>
                   </div>
-
                 </div>
               </div>
             </div>
 
 
           </div>
-          : ''}
+          : <div className='loading_image'><img src='/loading_256.gif' /></div>}
 
       </div>
     </>

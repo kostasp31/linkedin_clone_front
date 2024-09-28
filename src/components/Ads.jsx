@@ -253,7 +253,7 @@ const Ads = ({ user, setUser }) => {
 
 
           </div>
-          : ''}
+          : <div className='loading_image'><img src='/loading_256.gif' /></div>}
 
       </div>
     </>

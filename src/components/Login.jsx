@@ -1,9 +1,14 @@
 import { useState } from 'react'
 import Notification from './Notification'
+import {
+  useNavigate
+} from 'react-router-dom'
 
 const Login = ({ loginUser, msg }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const navigate = useNavigate()
 
   return (
     <div>
@@ -53,7 +58,7 @@ const Login = ({ loginUser, msg }) => {
               <br />
               <Notification message={msg} />
               <div>
-                Don't have an account? <a href='/register'>Join Now</a>
+                Don't have an account? <u><a style={{color:'blue', cursor:'pointer'}} onClick={() => navigate('/register')}>Join Now</a></u>
               </div>
               <br />
             </form>

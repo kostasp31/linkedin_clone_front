@@ -144,6 +144,11 @@ const BlogInfo = ({user}) => {
   {showBox ? boxStyle={ display: '' } : boxStyle={ display: 'none' } }
   {!showBox ? btnStyle={ display: '' } : btnStyle={ display: 'none' } }
 
+  let lines = []
+  if (blog) {
+    lines = blog.body.split("\n")
+  }
+
   if (blog && userDta && likes !== undefined && comments) {
     return (
       <>
@@ -153,7 +158,51 @@ const BlogInfo = ({user}) => {
         <h1 style={{textAlign:'center', marginTop:'0px',paddingTop:'80px',paddingBottom:'30px'}}>{blog.title}</h1>
         <div className=''>
           <div className='bioText' style={{marginRight: '4%', marginLeft:'4%', width:'auto', paddingBottom:'40px'}} >
-            <div style={{ whiteSpace: 'pre-line' }}>{blog.body}</div>
+
+          <div>
+            {lines && lines.map((line) => {
+              if (/^@!img<.*>$/.test(line)) {
+                let subStr = line.substring(
+                  line.indexOf("<") + 1, 
+                  line.lastIndexOf(">")
+                )
+                return <div style={{textAlign:'center'}}><img className='blg-media' src={subStr} /></div>
+              }
+              else if (/^@!vid<.*>$/.test(line)) {
+                let subStr = line.substring(
+                  line.indexOf("<") + 1, 
+                  line.lastIndexOf(">")
+                )
+                return (
+                <div style={{textAlign:'center'}}> 
+                  <video className='blg-media' controls>
+                    <source src={subStr} />
+                  Your browser does not support the video tag.
+                  </video> 
+                </div>
+                )
+              }
+              else if (/^@!aud<.*>$/.test(line)) {
+                let subStr = line.substring(
+                  line.indexOf("<") + 1, 
+                  line.lastIndexOf(">")
+                )
+                return (
+                <div style={{textAlign:'center'}}> 
+                  <audio controls>
+                    <source src={subStr} />
+                  Your browser does not support the audio element.
+                  </audio> 
+                </div>
+                )
+              }
+              else {
+                return <div>{line}</div>
+              }
+            })}
+            {/* <div style={{ whiteSpace: 'pre-line' }}>{blog.body}</div> */}
+          </div>
+
             <div style={{float:'right', display:'flex'}}>
               <h3 style={{margin: '0'}}>Likes: {likes}</h3>
               <button style={{padding: '0px 20px', marginLeft:'10px', height: '30px'}} disabled={disableLikes} className='savebtn' onClick={like}>Like</button>
@@ -193,6 +242,9 @@ const BlogInfo = ({user}) => {
         </div>
       </>
     )
+  }
+  else {
+    return <div className='loading_image'><img src='/loading_256.gif' /></div>
   }
 }
 
